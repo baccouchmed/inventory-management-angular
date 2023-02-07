@@ -1,0 +1,23 @@
+<div class="" *ngIf="selectedLang">
+  <button mat-icon-button [matMenuTriggerFor]="languages">
+    <span class="w-6 shadow rounded-sm overflow-hidden">
+      <img
+        class="w-6"
+        [src]="urlFlag + selectedLang?.flag"
+        [alt]="'Flag image for ' + selectedLang?.key"
+      />
+    </span>
+  </button>
+  <mat-menu [xPosition]="'before'" #languages="matMenu">
+    <ng-container *ngFor="let lang of listLocals">
+      <button mat-menu-item (click)="setActiveLang(lang)">
+        <span class="flex items-center">
+          <span class="w-6 shadow rounded-sm overflow-hidden">
+            <img class="w-6" [src]="urlFlag + lang.flag" [alt]="'Flag image for ' + lang.key" />
+          </span>
+          <span class="ml-3">{{ lang.label }}</span>
+        </span>
+      </button>
+    </ng-container>
+  </mat-menu>
+</div>

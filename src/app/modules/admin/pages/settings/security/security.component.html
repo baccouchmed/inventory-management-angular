@@ -1,0 +1,180 @@
+<div class="w-full max-w-3xl">
+  <!-- Form -->
+  <form #myForm="ngForm" ngForm="ngForm">
+    <!-- Section -->
+    <div class="w-full">
+      <div class="text-xl">{{ 'Change your password' | transloco }}</div>
+    </div>
+    <div class="grid sm:grid-cols-4 gap-6 w-full mt-8">
+      <!-- Current password -->
+      <div class="sm:col-span-4">
+        <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+          <mat-label>{{ 'Current password' | transloco }}</mat-label>
+          <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:key'" matPrefix></mat-icon>
+          <input
+            [(ngModel)]="password"
+            [disabled]="sendedCode"
+            pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,20}$"
+            maxlength="20"
+            required
+            matInput
+            name="password"
+            type="password"
+            #passwordField
+          />
+          <button
+            mat-icon-button
+            type="button"
+            (click)="
+              passwordField.type === 'password'
+                ? (passwordField.type = 'text')
+                : (passwordField.type = 'password')
+            "
+            matSuffix
+          >
+            <mat-icon
+              class="icon-size-5"
+              *ngIf="passwordField.type === 'password'"
+              [svgIcon]="'heroicons_solid:eye'"
+            ></mat-icon>
+            <mat-icon
+              class="icon-size-5"
+              *ngIf="passwordField.type === 'text'"
+              [svgIcon]="'heroicons_solid:eye-off'"
+            ></mat-icon>
+          </button>
+        </mat-form-field>
+        <mat-error
+          *ngIf="
+            myForm.controls['password'] &&
+            (myForm.controls['password'].touched || myForm.submitted) &&
+            myForm.controls['password'].hasError('required')
+          "
+        >
+          {{ 'Password is required' | transloco }}
+        </mat-error>
+        <mat-error
+          *ngIf="
+            myForm.controls['password'] &&
+            (myForm.controls['password'].dirty || myForm.submitted) &&
+            myForm.controls['password'].hasError('pattern')
+          "
+        >
+          {{ 'Minimum 6 characters.Must include a number and a letter uppercase.' | transloco }}
+        </mat-error>
+      </div>
+      <!-- New password -->
+      <div class="sm:col-span-4">
+        <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+          <mat-label>{{ 'New password' | transloco }}</mat-label>
+          <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:key'" matPrefix></mat-icon>
+          <input
+            [(ngModel)]="newPassword"
+            pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,20}$"
+            maxlength="20"
+            required
+            matInput
+            name="new-password"
+            type="password"
+            #newPasswordField
+          />
+          <button
+            mat-icon-button
+            type="button"
+            (click)="
+              newPasswordField.type === 'password'
+                ? (newPasswordField.type = 'text')
+                : (newPasswordField.type = 'password')
+            "
+            matSuffix
+          >
+            <mat-icon
+              class="icon-size-5"
+              *ngIf="newPasswordField.type === 'password'"
+              [svgIcon]="'heroicons_solid:eye'"
+            ></mat-icon>
+            <mat-icon
+              class="icon-size-5"
+              *ngIf="newPasswordField.type === 'text'"
+              [svgIcon]="'heroicons_solid:eye-off'"
+            ></mat-icon>
+          </button>
+        </mat-form-field>
+        <mat-error
+          *ngIf="
+            myForm.controls['new-password'] &&
+            (myForm.controls['new-password'].touched || myForm.submitted) &&
+            myForm.controls['new-password'].hasError('required')
+          "
+        >
+          {{ 'New Password is required' | transloco }}
+        </mat-error>
+        <mat-error
+          *ngIf="
+            myForm.controls['new-password'] &&
+            (myForm.controls['new-password'].dirty || myForm.submitted) &&
+            myForm.controls['new-password'].hasError('pattern')
+          "
+        >
+          {{ 'Minimum 6 characters.Must include a number and a letter uppercase.' | transloco }}
+        </mat-error>
+      </div>
+    </div>
+  </form>
+
+  <form #myForm1="ngForm" ngForm="ngForm">
+    <div class="grid sm:grid-cols-4 gap-6 w-full mt-8">
+      <!-- confirmation code -->
+      <div class="sm:col-span-4 flex flex-row">
+        <div class="items-center w-3/5">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label>{{ 'Code' | transloco }}</mat-label>
+            <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:key'" matPrefix></mat-icon>
+            <input [(ngModel)]="code" [disabled]="!sendedCode" required matInput name="code" />
+          </mat-form-field>
+          <mat-error
+            *ngIf="
+              myForm.controls['code'] &&
+              (myForm.controls['code'].touched || myForm.submitted) &&
+              myForm.controls['code'].hasError('required')
+            "
+          >
+            {{ 'code is required' | transloco }}
+          </mat-error>
+        </div>
+        <div class="w-2/5">
+          <button
+            [disabled]="testCode || !myForm.valid || loadingSubmit"
+            class="ml-4 mt-7 w-25"
+            mat-flat-button
+            type="submit"
+            [color]="'accent'"
+            (click)="sendCode()"
+          >
+            {{ (sendedCode ? 'resend' : 'send code') | transloco
+            }}<span *ngIf="testCode"> &nbsp;{{ 'in' | transloco }} {{ counter }}s</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Divider -->
+    <div class="my-10 border-t"></div>
+
+    <!-- Actions -->
+    <div class="flex items-center justify-end">
+      <button mat-stroked-button type="button" (click)="cancelForm(myForm)">
+        {{ 'Cancel' | transloco }}
+      </button>
+      <button
+        [disabled]="!myForm.valid || !myForm1.valid || loadingSubmit"
+        class="ml-4"
+        mat-flat-button
+        type="submit"
+        [color]="'primary'"
+        (click)="changePassword(myForm)"
+      >
+        {{ 'Save' | transloco }}
+      </button>
+    </div>
+  </form>
+</div>

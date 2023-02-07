@@ -1,0 +1,19 @@
+<div class="" *ngIf="selectedLang && listLocals.length > 1">
+  <button [matMenuTriggerFor]="languages">
+    <a class="" style="text-decoration: underline"
+      >{{ selectedLang.label | transloco }}({{ selectedLang.key | transloco }})</a
+    >
+  </button>
+  <mat-menu [xPosition]="'before'" #languages="matMenu">
+    <ng-container *ngFor="let lang of listLocals">
+      <button mat-menu-item (click)="setActiveLang(lang)">
+        <span class="flex items-center">
+          <span class="w-6 shadow rounded-sm overflow-hidden">
+            <img class="w-6" [src]="urlFlag + lang.flag" [alt]="'Flag image for ' + lang.key" />
+          </span>
+          <span class="ml-3">{{ lang.label | transloco }}</span>
+        </span>
+      </button>
+    </ng-container>
+  </mat-menu>
+</div>

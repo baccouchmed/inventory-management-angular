@@ -1,0 +1,30 @@
+.user-grid {
+  grid-template-columns: 10px 40px 50px 50px 50px auto 20px 50px 50px 10px;
+
+  @screen sm {
+    grid-template-columns: 20px 40px 70px 70px 70px auto 30px 120px 120px 10px;
+  }
+
+  @screen md {
+    grid-template-columns: 30px 60px 90px 90px 90px auto 50px 140px 140px 10px;
+  }
+
+  @screen lg {
+    grid-template-columns: 40px 70px 110px 110px 110px auto 70px 170px 170px 10px;
+  }
+}
+.pricescontract-grid {
+  grid-template-columns: 70px 40px 40px 40px;
+
+  @screen sm {
+    grid-template-columns: 110px 80px 80px 80px;
+  }
+
+  @screen md {
+    grid-template-columns: 160px 100px 100px 100px;
+  }
+
+  @screen lg {
+    grid-template-columns: 190px 140px 140px 140px;
+  }
+}

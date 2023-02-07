@@ -1,0 +1,103 @@
+<div class="flex flex-col flex-1 bg-card dark:bg-transparent">
+  <form class="w-full" #myForm="ngForm" ngForm="ngForm">
+    <!-- Header -->
+    <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
+      <!-- Title -->
+      <div class="hidden md:flex text-3xl font-extrabold tracking-tight">
+        {{ 'Type product' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 w-full items-center md:mt-3 sm:mt-0">
+        <div class="w-3/4 sm:w-2/3 flex flex-row">
+          <!-- clear project button -->
+          <button
+            class="mr-2 text-red-500"
+            mat-flat-button
+            type="button"
+            (click)="resetForm(myForm, $event)"
+          >
+            <span class="ml-2 mr-1">{{ 'Clear' | transloco }}</span>
+          </button>
+        </div>
+        <div class="flex justify-end w-1/4 sm:w-1/3 ml-1 sm:ml-0">
+          <!-- cancel project button -->
+          <button class="mr-2" mat-flat-button (click)="cancelForm(myForm)">
+            <span class="ml-2 mr-1">{{ 'Cancel' | transloco }}</span>
+          </button>
+          <!-- save project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            [color]="'primary'"
+            type="submit"
+            (click)="createStage(myForm)"
+            *appFeatures="[
+              {
+                code: featureCodes.typeProduct,
+                actions: [featureActions.create]
+              }
+            ]"
+          >
+            <span class="ml-2 mr-1">{{ 'Save' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+      <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+        <div class="flex flex-col mb-6 w-full bg-gray-100">
+          <div class="flex text-2xl font-extrabold tracking-tight ml-4 capitalize"></div>
+          <div class="grid grid-cols-1 min-w-full gap-1 min-w-full">
+            <div class="grid grid-cols-12 gap-3 m-1 p-1">
+              <div class="col-span-11 flex flex-row justify-center capitalize">
+                {{ 'label' | transloco }}
+              </div>
+            </div>
+            <div
+              *ngFor="let item of tableItem; let index = index; let last = last; let first = first"
+              class="grid grid-cols-12 gap-3 m-1 p-1"
+            >
+              <div class="col-span-11">
+                <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                  <input
+                    [(ngModel)]="stage[index].label"
+                    matInput
+                    name="label{{ index }}"
+                    type="text"
+                    [required]="tableItem.length > 1"
+                  />
+                </mat-form-field>
+              </div>
+              <div class="col-span-1 flex justify-center">
+                <button
+                  *ngIf="!first"
+                  mat-icon-button
+                  type="button"
+                  (click)="deleteRow(index, $event)"
+                  [disabled]="loading"
+                >
+                  <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                </button>
+                <button
+                  *ngIf="last"
+                  mat-icon-button
+                  type="button"
+                  (click)="addRow($event)"
+                  [disabled]="loading"
+                >
+                  <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

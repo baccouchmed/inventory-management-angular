@@ -1,0 +1,45 @@
+.thirdpartycontract-grid {
+  grid-template-columns: 200px 250px 130px 100px 70px;
+
+  @screen sm {
+    grid-template-columns:  200px 250px 130px 100px 70px 50px;
+  }
+
+  @screen md {
+    grid-template-columns: 200px 250px 130px 100px 70px 50px;
+  }
+
+  @screen lg {
+    grid-template-columns: 200px auto 150px 150px 70px 70px;
+  }
+}
+.pricescontract-grid {
+  grid-template-columns: 70px auto 20px;
+
+  @screen sm {
+    grid-template-columns:  110px auto 40px;
+  }
+
+  @screen md {
+    grid-template-columns:160px auto 40px;
+  }
+
+  @screen lg {
+    grid-template-columns: 190px auto 40px;
+  }
+}
+.width{
+  width: max-content;
+  @screen lg {
+    width: auto;
+  }
+}
+.height{
+  height: 70vh;
+}
+.logo {
+  width: 11rem;
+  height: 11rem;
+  min-width: 11rem;
+  min-height: 11rem;
+}

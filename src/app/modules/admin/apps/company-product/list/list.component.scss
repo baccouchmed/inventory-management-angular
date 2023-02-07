@@ -1,0 +1,15 @@
+.stage-grid {
+  grid-template-columns: auto ;
+
+  @screen sm {
+    grid-template-columns:  auto 30px;
+  }
+
+  @screen md {
+    grid-template-columns: auto 30px;
+  }
+
+  @screen lg {
+    grid-template-columns: auto 50px;
+  }
+}

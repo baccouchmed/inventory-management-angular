@@ -1,0 +1,15 @@
+.feature-grid {
+  grid-template-columns: 70px auto 70px 70px 70px;
+
+  @screen sm {
+    grid-template-columns: 100px auto 100px 100px 125px 30px;
+  }
+
+  @screen md {
+    grid-template-columns: 100px auto 125px 125px 150px 30px;
+  }
+
+  @screen lg {
+    grid-template-columns: 130px auto 200px 200px 250px 50px;
+  }
+}

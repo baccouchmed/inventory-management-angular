@@ -1,0 +1,74 @@
+<!-- Button -->
+<div *ngIf="user">
+  <div
+    class="flex flex-auto items-center ml-0 cursor-pointer"
+    #menuTrigger="matMenuTrigger"
+    [matMenuTriggerFor]="userActions"
+  >
+    <div class="relative flex flex-0 items-center justify-center w-10 h-10">
+      <ng-container *ngIf="user.avatar">
+        <img
+          class="w-7 h-7 rounded-full object-cover"
+          [src]="urlAvatar + user.avatar"
+          alt="Contact avatar"
+        />
+      </ng-container>
+      <ng-container *ngIf="!user.avatar">
+        <div
+          class="flex items-center justify-center w-7 h-7 rounded-full text-lg uppercase bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-200"
+        >
+          {{ user.name.charAt(0) }}
+        </div>
+      </ng-container>
+    </div>
+    <div class="ml-0 font-medium leading-5 truncate hidden sm:block">{{ user.name }}</div>
+  </div>
+
+  <mat-menu [xPosition]="'before'" #userActions="matMenu">
+    <button mat-menu-item>
+      <span class="flex flex-col leading-none">
+        <span>{{ 'Signed in as' | transloco }}</span>
+        <span class="mt-1.5 text-md font-medium">{{ user.email }}</span>
+      </span>
+    </button>
+    <mat-divider class="my-2"></mat-divider>
+    <button mat-menu-item (click)="redirectTo('/home/profile')">
+      <mat-icon [svgIcon]="'heroicons_outline:user-circle'"></mat-icon>
+      <span>{{ 'Profile' | transloco }}</span>
+    </button>
+    <mat-divider class="my-2" *ngIf="listCompanies?.length > 1"></mat-divider>
+    <button mat-menu-item [matMenuTriggerFor]="userCompanies" *ngIf="listCompanies?.length > 1">
+      <mat-icon [svgIcon]="'heroicons_outline:user-group'"></mat-icon>
+      <span>{{ 'Company' | transloco }}</span>
+    </button>
+    <mat-divider class="my-2"></mat-divider>
+    <a mat-menu-item [href]="urlGuide" target="_blank">
+      <mat-icon svgIcon="heroicons_outline:book-open"></mat-icon>
+      <span>{{ 'User guide ' | transloco }}</span>
+    </a>
+    <mat-divider class="my-2"></mat-divider>
+    <a mat-menu-item [href]="releaseNotes" target="_blank">
+      <mat-icon svgIcon="heroicons_outline:speakerphone"></mat-icon>
+      <span>{{ 'Release notes' | transloco }}</span>
+    </a>
+    <mat-divider class="my-2"></mat-divider>
+    <button mat-menu-item (click)="signOut()">
+      <mat-icon [svgIcon]="'heroicons_outline:logout'"></mat-icon>
+      <span>{{ 'Sign out' | transloco }}</span>
+    </button>
+  </mat-menu>
+  <mat-menu class="user-status-menu" #userCompanies="matMenu">
+    <ng-container *ngIf="listCompanies?.length">
+      <ng-container *ngIf="user.type === 'super'">
+        <button
+          *ngFor="let company of listCompanies"
+          mat-menu-item
+          (click)="switchCompany(company, menuTrigger, $event)"
+          [disabled]="company._id === connectedCompany?._id"
+        >
+          <span>{{ company.name }}</span>
+        </button>
+      </ng-container>
+    </ng-container>
+  </mat-menu>
+</div>

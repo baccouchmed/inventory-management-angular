@@ -1,0 +1,465 @@
+<div class="flex flex-col flex-1 bg-card dark:bg-transparent" *ngIf="user">
+  <form class="w-full" #myForm="ngForm" ngForm="ngForm">
+    <!-- Header -->
+    <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
+      <!-- Title -->
+      <div class="hidden md:flex text-3xl font-extrabold tracking-tight">
+        {{ 'User' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 w-full items-center md:mt-3 sm:mt-0">
+        <div class="w-3/4 sm:w-2/3 flex flex-row">
+          <!-- delete user button -->
+          <button
+            class="mr-2 text-red-500"
+            mat-flat-button
+            (click)="deleteUser()"
+            *appFeatures="[
+              {
+                code: featureCodes.users,
+                actions: [featureActions.delete]
+              }
+            ]"
+          >
+            <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+            <span class="ml-2 mr-1">{{ 'Delete' | transloco }}</span>
+          </button>
+        </div>
+        <div class="flex justify-end w-1/4 sm:w-1/3 ml-1 sm:ml-0">
+          <!-- cancel project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            (click)="cancelEdit()"
+            *appFeatures="[
+              {
+                code: featureCodes.users,
+                actions: [featureActions.update]
+              }
+            ]"
+          >
+            <span class="ml-2 mr-1">{{ 'Cancel' | transloco }}</span>
+          </button>
+          <!-- save project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            [color]="'primary'"
+            type="submit"
+            (click)="updateUser(myForm)"
+            [disabled]="isLoading"
+            *appFeatures="[
+              {
+                code: featureCodes.users,
+                actions: [featureActions.update]
+              }
+            ]"
+          >
+            <span class="ml-2 mr-1">{{ 'Save' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+      <div class="flex flex-col mb-6 w-full">
+        <div class="flex justify-center my-4">
+          <div class="relative w-40 h-40">
+            <button
+              id="img1"
+              class="changeAvatar absolute w-10 h-10 rounded rounded-full bg-gray-800 text-white"
+              (click)="fileInput.click()"
+              type="button"
+              *appFeatures="[
+                {
+                  code: featureCodes.users,
+                  actions: [featureActions.update]
+                }
+              ]"
+            >
+              <mat-icon class="icon-size-6" svgIcon="iconsmind:camera_2"></mat-icon>
+            </button>
+            <img
+              id="img2"
+              class="w-full h-full rounded-full avatar"
+              *ngIf="avatarExist"
+              [src]="urlAvatar + user.avatar"
+              alt="User avatar"
+            />
+            <mat-icon
+              id="img3"
+              class="avatar"
+              *ngIf="!avatarExist"
+              [svgIcon]="'heroicons_solid:user-circle'"
+            ></mat-icon>
+            <input
+              accept="image/*"
+              hidden
+              type="file"
+              (change)="onAvatarSelected($event)"
+              #fileInput
+              name="avatar"
+              id="avatar"
+            />
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- code -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'code' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="user.code"
+                matInput
+                name="code"
+                type="text"
+                required
+                (change)="touched = true"
+                [disabled]="isLoading"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['code'] &&
+                (myForm.controls['code'].dirty || myForm.submitted) &&
+                myForm.controls['code'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- name -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'name' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="user.name"
+                matInput
+                name="name"
+                type="text"
+                required
+                (change)="touched = true"
+                [disabled]="isLoading"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['name'] &&
+                (myForm.controls['name'].dirty || myForm.submitted) &&
+                myForm.controls['name'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- email -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'email' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="user.email"
+                matInput
+                name="email"
+                type="email"
+                required
+                (change)="touched = true"
+                [disabled]="isLoading"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- phone number -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'phone number' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="user.phone"
+                matInput
+                name="phone"
+                type="text"
+                (change)="touched = true"
+                [disabled]="isLoading"
+              />
+            </mat-form-field>
+          </div>
+          <!-- type -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'type' | transloco }}</mat-label>
+              <mat-select
+                placeholder="select type"
+                (selectionChange)="user.type = selectValueCurrency.value; touched = true"
+                [value]="user.type"
+                [(ngModel)]="user.type"
+                name="type"
+                #selectValueCurrency
+                required
+                [disabled]="isLoading"
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row" *ngIf="user.type">
+                    <span class="hidden sm:block">
+                      {{ user.type }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-option *ngFor="let item of listTypes; trackBy: trackByFn" [value]="item.key">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block">
+                      {{ item.value }}
+                    </span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['type'] &&
+                (myForm.controls['type'].dirty || myForm.submitted) &&
+                myForm.controls['type'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- password -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label>{{ 'Password' | transloco }}</mat-label>
+              <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:key'" matPrefix></mat-icon>
+              <input
+                [(ngModel)]="user.password"
+                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,20}$"
+                maxlength="20"
+                matInput
+                name="password"
+                type="password"
+                [disabled]="isLoading"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['password'] &&
+                (myForm.controls['password'].touched || myForm.submitted) &&
+                myForm.controls['password'].hasError('required')
+              "
+            >
+              {{ 'Password is required' | transloco }}
+            </mat-error>
+            <mat-error
+              *ngIf="
+                myForm.controls['password'] &&
+                (myForm.controls['password'].dirty || myForm.submitted) &&
+                myForm.controls['password'].hasError('pattern')
+              "
+            >
+              {{ 'Minimum 6 characters.Must include a number and a letter uppercase' | transloco }}.
+            </mat-error>
+          </div>
+          <!-- type -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label>{{ 'Confirm password' | transloco }}</mat-label>
+              <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:key'" matPrefix></mat-icon>
+              <input
+                [(ngModel)]="confirmPassword"
+                pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{6,20}$"
+                maxlength="20"
+                matInput
+                name="confirm-password"
+                type="password"
+                [disabled]="isLoading || !user.password"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['confirm-password'] &&
+                (myForm.controls['confirm-password'].touched || myForm.submitted) &&
+                myForm.controls['confirm-password'].hasError('required')
+              "
+            >
+              {{ 'Confirm Password is required' | transloco }}
+            </mat-error>
+            <mat-error
+              *ngIf="
+                myForm.controls['confirm-password'] &&
+                (myForm.controls['confirm-password'].dirty || myForm.submitted) &&
+                myForm.controls['confirm-password'].hasError('pattern')
+              "
+            >
+              {{ 'Minimum 6 characters.Must include a number and a letter uppercase' | transloco }}.
+            </mat-error>
+          </div>
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'group' | transloco }}</mat-label>
+              <mat-select
+                placeholder="{{ 'Select group' | transloco }}"
+                [value]="group?._id"
+                name="group"
+                (selectionChange)="touched = true"
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row" *ngIf="group">
+                    <span class="">
+                      {{ group?.label }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [displayMember]="'label'"
+                  [showSpinner]="false"
+                  [array]="listGroups"
+                  (filteredReturn)="filteredListGroups = $event"
+                ></mat-select-filter>
+                <mat-option [value]="null" *ngIf="group?._id">
+                  <div class="font-medium items-center flex flex-row" (click)="updateGroup(null)">
+                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option
+                  *ngFor="let item of filteredListGroups"
+                  [value]="item._id"
+                  (click)="updateGroup(item)"
+                >
+                  <div class="font-medium items-center flex flex-row">
+                    <span class=""> {{ item.label }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['group'] &&
+                (myForm.controls['group'].dirty || myForm.submitted) &&
+                myForm.controls['group'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- third party type -->
+          <div class="sm:col-span-2" *ngIf="user.type && user.type === Types.external">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'type third party' | transloco }}</mat-label>
+              <mat-select
+                placeholder="select type third party"
+                (selectionChange)="
+                  refreshListThirdParty(selectValueTypeThirdParty.value); touched = true
+                "
+                [value]="thirdPartyTypeId?._id"
+                name="thirdPartyType"
+                #selectValueTypeThirdParty
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row" *ngIf="thirdPartyTypeId">
+                    <span class="">
+                      {{ thirdPartyTypeId.label }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [displayMember]="'label'"
+                  [showSpinner]="false"
+                  [array]="listTypeThirdParty"
+                  (filteredReturn)="filteredListTypeThirdParty = $event"
+                ></mat-select-filter>
+                <mat-option
+                  [value]="null"
+                  *ngIf="thirdPartyTypeId?._id"
+                  (click)="updateThirdPartyType(null)"
+                >
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option
+                  *ngFor="let item of filteredListTypeThirdParty; trackBy: trackByFn"
+                  [value]="item._id"
+                  (click)="updateThirdPartyType(item)"
+                >
+                  <div class="font-medium items-center flex flex-row">
+                    <span class=""> {{ item.label }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['thirdPartyType'] &&
+                (myForm.controls['thirdPartyType'].dirty || myForm.submitted) &&
+                myForm.controls['thirdPartyType'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- third party -->
+          <div class="sm:col-span-2" *ngIf="user.type && user.type === Types.external">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'third party' | transloco }}</mat-label>
+              <mat-select
+                placeholder="select third party"
+                [value]="thirdPartyId?._id"
+                (selectionChange)="touched = true"
+                name="thirdParty"
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row" *ngIf="thirdPartyId">
+                    <span class="">
+                      {{ thirdPartyId.label }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [displayMember]="'label'"
+                  [showSpinner]="false"
+                  [array]="listThirdParty"
+                  (filteredReturn)="filteredListThirdParty = $event"
+                ></mat-select-filter>
+                <mat-option
+                  [value]="null"
+                  *ngIf="thirdPartyId?._id"
+                  (click)="updateThirdParty(null)"
+                >
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option
+                  *ngFor="let item of filteredListThirdParty"
+                  (click)="updateThirdParty(item)"
+                  [value]="item._id"
+                >
+                  <div class="font-medium items-center flex flex-row">
+                    <span class=""> {{ item.label }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['thirdParty'] &&
+                (myForm.controls['thirdParty'].dirty || myForm.submitted) &&
+                myForm.controls['thirdParty'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

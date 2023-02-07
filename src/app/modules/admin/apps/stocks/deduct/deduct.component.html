@@ -1,0 +1,258 @@
+<div
+  class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent"
+>
+  <!-- Header -->
+  <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+    <!-- Loader -->
+    <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+      <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+    </div>
+    <!-- Title -->
+    <div class="hidden sm:flex text-3xl font-extrabold">{{ 'Deduct from stock' | transloco }}</div>
+    <!-- Actions -->
+    <div class="flex flex-shrink-0 w-full items-center md:mt-4 sm:mt-0">
+      <div class="w-3/4 sm:w-2/3 flex flex-row">
+        <!-- Search -->
+        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-3/4">
+          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+          <input
+            matInput
+            [(ngModel)]="searchFilter"
+            (ngModelChange)="updateSearch()"
+            [autocomplete]="'off'"
+            placeholder="{{ 'Search' | transloco }}"
+          />
+        </mat-form-field>
+        <!-- Refresh projects list -->
+        <div class="w-1/4">
+          <button class="ml-2 bg-gray-300" mat-flat-button (click)="getList()">
+            <mat-icon svgIcon="heroicons_outline:refresh"></mat-icon>
+          </button>
+        </div>
+      </div>
+      <div class="flex justify-end w-1/4 sm:w-1/3 sm:ml-0">
+        <button class="ml-2 bg-gray-300" mat-flat-button (click)="openFilter()">
+          <mat-icon svgIcon="heroicons_outline:filter"></mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="flex flex-shrink-0 w-full items-center md:mt-4 sm:mt-0">
+      <div class="flex flex-col mb-6 w-full" *ngIf="openFilters">
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- site -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'Company' | transloco }}</mat-label>
+              <mat-select
+                placeholder="select site"
+                [(ngModel)]="filterProduct.companyProduct"
+                [disabled]="isLoading"
+                name="siteId"
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="">
+                      {{ filterProduct?.companyProduct?.name }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [displayMember]="'name'"
+                  [showSpinner]="false"
+                  [array]="listCompanies"
+                  (filteredReturn)="filteredListCompanies = $event"
+                ></mat-select-filter>
+                <mat-option [value]="null">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option *ngFor="let item of filteredListCompanies" [value]="item">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class=""> {{ item.name }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'Type product' | transloco }}</mat-label>
+              <mat-select
+                placeholder="select site"
+                [(ngModel)]="filterProduct.typeProduct"
+                [disabled]="isLoading"
+                name="siteId"
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="">
+                      {{ filterProduct?.typeProduct?.label }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [displayMember]="'label'"
+                  [showSpinner]="false"
+                  [array]="listTypeProducts"
+                  (filteredReturn)="filteredListTypeProducts = $event"
+                ></mat-select-filter>
+                <mat-option [value]="null">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option *ngFor="let item of filteredListTypeProducts" [value]="item">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class=""> {{ item.label }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex flex-auto overflow-hidden">
+    <!-- projects list -->
+    <div class="flex flex-col flex-auto sm:mb-18">
+      <ng-container>
+        <ng-container *ngIf="displayedList?.data?.length > 0; else noProducts">
+          <!-- Header -->
+
+          <div
+            class="user-grid grid z-10 top-0 shadow items-center gap-4 py-4 px-4 md:px-6 text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
+          >
+            <div class="flex cursor-pointer">
+              <span>{{ 'N°' | transloco }}</span>
+            </div>
+            <div class="flex cursor-pointer">
+              <span>{{ 'Type' | transloco }}</span>
+            </div>
+            <div class="hidden md:flex">
+              <span>{{ 'email' | transloco }}</span>
+            </div>
+            <div class="flex">
+              <span>{{ 'Company' | transloco }}</span>
+            </div>
+            <div class="flex"></div>
+            <div class="flex">
+              <span>{{ 'Product' | transloco }}</span>
+            </div>
+            <div class="flex">{{ 'Quantity' | transloco }}</div>
+            <div class="hidden sm:flex ml-auto"></div>
+          </div>
+          <div class="flex-1 overflow-hidden sm:overflow-y-auto">
+            <div class="flex-1 sm:grid sm:flex-0">
+              <!-- Rows -->
+              <ng-container>
+                <ng-container *ngFor="let productStock of displayedList?.data; let index = index">
+                  <div class="user-grid grid items-center gap-4 py-4 px-4 md:px-6 border-b">
+                    <div class="truncate">{{ index + 1 }}</div>
+                    <div class="truncate">{{ productStock.typeProductId.label }}</div>
+                    <div class="truncate">
+                      <div
+                        class="relative flex flex-0 items-center justify-center w-20 h-20 mr-6 rounded overflow-hidden border"
+                      >
+                        <img
+                          class="w-20"
+                          *ngIf="productStock.companyProductId.logo"
+                          [alt]="'Product thumbnail image'"
+                          [src]="urlLogo + productStock.companyProductId.logo"
+                        />
+                        <div
+                          class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase"
+                          *ngIf="!productStock.companyProductId.logo"
+                        >
+                          NO THUMB
+                        </div>
+                      </div>
+                    </div>
+                    <div class="truncate">{{ productStock.companyProductId.name }}</div>
+                    <div class="truncate">
+                      <div
+                        class="relative flex flex-0 items-center justify-center w-20 h-20 mr-6 rounded overflow-hidden border"
+                      >
+                        <img
+                          class="w-20"
+                          *ngIf="productStock.productId.logo"
+                          [alt]="'Product thumbnail image'"
+                          [src]="urlLogo + productStock.productId.logo"
+                        />
+                        <div
+                          class="flex items-center justify-center w-full h-full text-xs font-semibold leading-none text-center uppercase"
+                          *ngIf="!productStock.productId.logo"
+                        >
+                          NO THUMB
+                        </div>
+                      </div>
+                    </div>
+                    <div class="hidden md:flex truncate">{{ productStock.productId.label }}</div>
+                    <div class="hidden sm:flex">
+                      <mat-form-field
+                        class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full"
+                      >
+                        <input
+                          [(ngModel)]="productStock.price"
+                          matInput
+                          name="price{{ index }}"
+                          type="number"
+                          disabled
+                        />
+                      </mat-form-field>
+                    </div>
+                    <div class="hidden sm:flex">
+                      <mat-form-field
+                        class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full"
+                      >
+                        <input
+                          [(ngModel)]="productStock.quantity"
+                          matInput
+                          name="quantity{{ index }}"
+                          type="number"
+                          [min]="'1'"
+                        />
+                      </mat-form-field>
+                    </div>
+                    <div class="hidden sm:flex">
+                      <button
+                        class=""
+                        mat-flat-button
+                        [color]="'primary'"
+                        (click)="deductStock(productStock._id, productStock.quantity)"
+                        [disabled]="!productStock.quantity"
+                      >
+                        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </div>
+          </div>
+
+          <mat-paginator
+            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            [showFirstLastButtons]="true"
+            (page)="pageChanged($event)"
+            showFirstLastButtons
+            [length]="displayedList?.total"
+            [pageSize]="currentSize"
+            [pageSizeOptions]="[5, 10, 20, 50, 100]"
+          ></mat-paginator>
+        </ng-container>
+      </ng-container>
+
+      <ng-template #noProducts>
+        <div class="p-8 sm:p-16 border-t text-4xl font-semibold tracking-tight text-center">
+          {{ (isLoading ? 'Loading...' : 'There are no elements !') | transloco }}
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

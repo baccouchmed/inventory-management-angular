@@ -1,0 +1,196 @@
+<div class="flex flex-col flex-1 bg-card dark:bg-transparent">
+  <form class="w-full" #myForm="ngForm" ngForm="ngForm">
+    <!-- Header -->
+    <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
+      <!-- Title -->
+      <div class="hidden md:flex text-3xl font-extrabold tracking-tight">
+        {{ 'Third Party Type' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 w-full items-center md:mt-3 sm:mt-0">
+        <div class="w-3/4 sm:w-2/3 flex flex-row">
+          <!-- clear project button -->
+          <button
+            class="mr-2 text-red-500"
+            mat-flat-button
+            type="button"
+            (click)="resetForm(myForm, $event)"
+          >
+            <span class="ml-2 mr-1">{{ 'Clear' | transloco }}</span>
+          </button>
+        </div>
+        <div class="flex justify-end w-1/4 sm:w-1/3 ml-1 sm:ml-0">
+          <!-- cancel project button -->
+          <button class="mr-2" mat-flat-button (click)="cancelForm(myForm)">
+            <span class="ml-2 mr-1">{{ 'Cancel' | transloco }}</span>
+          </button>
+          <!-- save project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            [color]="'primary'"
+            type="submit"
+            (click)="createTypeThirdParty(myForm)"
+          >
+            <span class="ml-2 mr-1">{{ 'Save' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+      <div class="flex flex-col mb-6 w-full bg-gray-100">
+        <div class="flex text-2xl font-extrabold tracking-tight ml-4 capitalize"></div>
+        <div class="grid grid-cols-1 min-w-full gap-1 min-w-full">
+          <div class="grid grid-cols-12 gap-3 m-1 p-1">
+            <div class="col-span-2 flex flex-row justify-center capitalize">
+              {{ 'code' | transloco }}
+            </div>
+            <div class="col-span-2 flex flex-row justify-center capitalize">
+              {{ 'label' | transloco }}
+            </div>
+            <div class="col-span-3 flex flex-row justify-center capitalize">
+              {{ 'nature' | transloco }}
+            </div>
+            <div class="col-span-2 flex flex-row justify-center capitalize">
+              {{ 'suffix' | transloco }}
+            </div>
+            <div class="col-span-2 flex flex-row justify-center capitalize">
+              {{ 'length' | transloco }}
+            </div>
+          </div>
+          <div
+            *ngFor="let item of tableItem; let index = index; let last = last"
+            class="grid grid-cols-12 gap-3 m-1 p-1"
+          >
+            <div class="col-span-2">
+              <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                <input
+                  [(ngModel)]="typethirdparty[index].code"
+                  matInput
+                  name="code{{ index }}"
+                  type="text"
+                  required
+                />
+              </mat-form-field>
+              <mat-error
+                *ngIf="
+                  myForm.controls['code'] &&
+                  (myForm.controls['code'].dirty || myForm.submitted) &&
+                  myForm.controls['code'].hasError('required')
+                "
+              >
+                {{ 'This field is required' | transloco }}
+              </mat-error>
+            </div>
+            <div class="col-span-2">
+              <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                <input
+                  [(ngModel)]="typethirdparty[index].label"
+                  matInput
+                  name="label{{ index }}"
+                  type="text"
+                  required
+                />
+              </mat-form-field>
+              <mat-error
+                *ngIf="
+                  myForm.controls['label'] &&
+                  (myForm.controls['label'].dirty || myForm.submitted) &&
+                  myForm.controls['label'].hasError('required')
+                "
+              >
+                {{ 'This field is required' | transloco }}
+              </mat-error>
+            </div>
+            <div class="col-span-3">
+              <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                <mat-select
+                  placeholder="select nature"
+                  [(ngModel)]="typethirdparty[index].nature"
+                  name="nature{{ index }}"
+                  required
+                >
+                  <mat-select-trigger>
+                    <div
+                      class="font-medium items-center flex flex-row"
+                      *ngIf="typethirdparty[index].nature"
+                    >
+                      <span>
+                        {{ typethirdparty[index].nature }}
+                      </span>
+                    </div>
+                  </mat-select-trigger>
+                  <mat-option
+                    *ngFor="let item of listNature; trackBy: trackByFn"
+                    [value]="item.key"
+                  >
+                    <div class="font-medium items-center flex flex-row">
+                      <span class="">
+                        {{ item.value }}
+                      </span>
+                    </div>
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-error
+                *ngIf="
+                  myForm.controls['nature'] &&
+                  (myForm.controls['nature'].dirty || myForm.submitted) &&
+                  myForm.controls['nature'].hasError('required')
+                "
+              >
+                {{ 'This field is required' | transloco }}
+              </mat-error>
+            </div>
+            <div class="col-span-2">
+              <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                <input
+                  [(ngModel)]="typethirdparty[index].suffix"
+                  matInput
+                  name="suffix{{ index }}"
+                  type="text"
+                />
+              </mat-form-field>
+            </div>
+            <div class="col-span-2">
+              <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                <input
+                  [(ngModel)]="typethirdparty[index].length"
+                  matInput
+                  name="length{{ index }}"
+                  type="number"
+                />
+              </mat-form-field>
+            </div>
+            <div class="col-span-1">
+              <button
+                *ngIf="!last"
+                mat-icon-button
+                class="mr-1 w-full"
+                type="button"
+                (click)="deleteRow(index, $event)"
+              >
+                <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+              </button>
+              <button
+                *ngIf="last"
+                mat-icon-button
+                class="mr-1 w-full"
+                type="button"
+                (click)="addRow($event)"
+              >
+                <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

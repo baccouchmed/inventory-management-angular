@@ -1,0 +1,206 @@
+<div class="flex flex-col flex-1 bg-card dark:bg-transparent" *ngIf="paramProject">
+  <form class="w-full" #myForm="ngForm" ngForm="ngForm">
+    <!-- Header -->
+    <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
+      <!-- Title -->
+      <div class="hidden md:flex text-3xl font-extrabold tracking-tight">
+        {{ 'Param Project' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 w-full items-center md:mt-3 sm:mt-0">
+        <div class="w-3/4 sm:w-2/3 flex flex-row"></div>
+        <div class="flex justify-end w-1/4 sm:w-1/3 ml-1 sm:ml-0">
+          <!-- save project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            [color]="'primary'"
+            type="submit"
+            (click)="editParamProject()"
+          >
+            <mat-icon [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
+            <span class="ml-2 mr-1">{{ 'Edit' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Main -->
+    <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+      <div class="flex flex-col mb-6 w-full">
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- Label -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'code attempt number' | transloco }}</mat-label>
+              <input
+                disabled
+                [(ngModel)]="paramProject.codeAttemptNumber"
+                matInput
+                name="codeAttemptNumber"
+                type="number"
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['codeAttemptNumber'] &&
+                (myForm.controls['codeAttemptNumber'].dirty || myForm.submitted) &&
+                myForm.controls['codeAttemptNumber'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- Abbreviation -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'code expiration time' | transloco }}</mat-label>
+              <input
+                disabled
+                [(ngModel)]="paramProject.codeExpirationTime"
+                matInput
+                name="codeExpirationTime"
+                type="number"
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['codeExpirationTime'] &&
+                (myForm.controls['codeExpirationTime'].dirty || myForm.submitted) &&
+                myForm.controls['codeExpirationTime'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- number of unit -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'suffix contact code' | transloco }}</mat-label>
+              <input
+                disabled
+                [(ngModel)]="paramProject.suffixContactCode"
+                matInput
+                name="suffixContactCode"
+                type="text"
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['suffixContactCode'] &&
+                (myForm.controls['suffixContactCode'].dirty || myForm.submitted) &&
+                myForm.controls['suffixContactCode'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- Number of decimal -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'length contact code' | transloco }}</mat-label>
+              <input
+                disabled
+                [(ngModel)]="paramProject.lengthContactCode"
+                matInput
+                name="decimal"
+                type="text"
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['lengthContactCode'] &&
+                (myForm.controls['lengthContactCode'].dirty || myForm.submitted) &&
+                myForm.controls['lengthContactCode'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- number of unit -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{
+                'Confirmation code attempt' | transloco
+              }}</mat-label>
+              <input
+                disabled
+                [(ngModel)]="paramProject.confirmationCodeAttempt"
+                matInput
+                name="confirmationCodeAttempt"
+                type="text"
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['suffixContactCode'] &&
+                (myForm.controls['suffixContactCode'].dirty || myForm.submitted) &&
+                myForm.controls['suffixContactCode'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- Number of decimal -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{
+                'Confirmation code duration' | transloco
+              }}</mat-label>
+              <input
+                disabled
+                [(ngModel)]="paramProject.confirmationCodeDuration"
+                matInput
+                name="confirmationCodeDuration"
+                type="text"
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['lengthContactCode'] &&
+                (myForm.controls['lengthContactCode'].dirty || myForm.submitted) &&
+                myForm.controls['lengthContactCode'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- number of unit -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label>{{ 'Suspend Password' | transloco }}</mat-label>
+              <mat-select
+                placeholder="select divider"
+                [(ngModel)]="suspendPassword"
+                name="divider"
+                disabled
+              >
+                <mat-option value="true">
+                  {{ 'Yes' | transloco }}
+                </mat-option>
+                <mat-option value="false">
+                  {{ 'No' | transloco }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

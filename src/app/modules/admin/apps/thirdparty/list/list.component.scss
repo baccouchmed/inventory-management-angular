@@ -1,0 +1,15 @@
+.thirdparty-grid {
+  grid-template-columns: 30px auto 80px 80px 60px;
+
+  @screen sm {
+    grid-template-columns:  50px auto 100px 100px 80px 30px;
+  }
+
+  @screen md {
+    grid-template-columns: 50px auto 120px 150px 100px 30px;
+  }
+
+  @screen lg {
+    grid-template-columns: 70px auto 150px 200px 120px 50px;
+  }
+}

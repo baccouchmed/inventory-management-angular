@@ -1,0 +1,161 @@
+<div class="flex flex-col flex-1 bg-card dark:bg-transparent" *ngIf="company">
+  <form class="w-full" #myForm="ngForm" ngForm="ngForm">
+    <!-- Header -->
+    <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
+      <!-- Title -->
+      <div class="hidden md:flex text-3xl font-extrabold tracking-tight">
+        {{ 'Company' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 w-full items-center md:mt-3 sm:mt-0">
+        <div class="w-3/4 sm:w-2/3 flex flex-row">
+          <!-- delete company button -->
+          <button class="mr-2 text-red-500" mat-flat-button (click)="deleteCompany()">
+            <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+            <span class="ml-2 mr-1">{{ 'Delete' | transloco }}</span>
+          </button>
+        </div>
+        <div class="flex justify-end w-1/4 sm:w-1/3 ml-1 sm:ml-0">
+          <!-- cancel project button -->
+          <button class="mr-2" mat-flat-button (click)="cancelEdit(myForm)">
+            <span class="ml-2 mr-1">{{ 'Cancel' | transloco }}</span>
+          </button>
+          <!-- save project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            [color]="'primary'"
+            type="submit"
+            (click)="updateCompany(myForm)"
+          >
+            <span class="ml-2 mr-1">{{ 'Save' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+      <div class="flex flex-col mb-6 w-full">
+        <div class="flex justify-center my-4">
+          <div class="relative w-40 h-40">
+            <button
+              id="img1"
+              class="changeAvatar absolute w-10 h-10 rounded rounded-full bg-gray-800 text-white"
+              (click)="fileInput.click()"
+              type="button"
+            >
+              <mat-icon class="icon-size-6" svgIcon="iconsmind:camera_2"></mat-icon>
+            </button>
+            <img
+              id="img2"
+              class="w-full h-full rounded-full avatar"
+              *ngIf="logoExist"
+              [src]="urlLogo + company.logo"
+              alt="Company logo"
+            />
+            <mat-icon
+              id="img3"
+              class="avatar"
+              *ngIf="!logoExist"
+              [svgIcon]="'heroicons_solid:user-circle'"
+            ></mat-icon>
+            <input
+              accept="image/*"
+              hidden
+              type="file"
+              (change)="onLogoSelected($event)"
+              #fileInput
+              name="logo"
+              id="logo"
+            />
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- code -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'code' | transloco }}</mat-label>
+              <input [(ngModel)]="company.code" matInput name="code" type="text" required />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['code'] &&
+                (myForm.controls['code'].dirty || myForm.submitted) &&
+                myForm.controls['code'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- label -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'label' | transloco }}</mat-label>
+              <input [(ngModel)]="company.name" matInput name="label" type="text" required />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['label'] &&
+                (myForm.controls['label'].dirty || myForm.submitted) &&
+                myForm.controls['label'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- identifier -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'identifier' | transloco }}</mat-label>
+              <input [(ngModel)]="company.identifier" matInput name="identifier" type="text" />
+            </mat-form-field>
+          </div>
+          <!-- phone number -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'phone number' | transloco }}</mat-label>
+              <input [(ngModel)]="company.phone" matInput name="phone" type="text" />
+            </mat-form-field>
+          </div>
+          <!-- fax -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'fax' | transloco }}</mat-label>
+              <input [(ngModel)]="company.fax" matInput name="fax" type="text" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- address -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'address' | transloco }}</mat-label>
+              <input [(ngModel)]="company.address" matInput name="address" type="text" />
+            </mat-form-field>
+          </div>
+          <!-- postal code -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'postal code' | transloco }}</mat-label>
+              <input [(ngModel)]="company.postalCode" matInput name="postal-code" type="text" />
+            </mat-form-field>
+          </div>
+          <!-- email -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'email' | transloco }}</mat-label>
+              <input [(ngModel)]="company.email" matInput name="email" type="email" />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

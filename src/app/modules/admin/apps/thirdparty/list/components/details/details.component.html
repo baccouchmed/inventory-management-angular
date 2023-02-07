@@ -1,0 +1,307 @@
+<div class="flex flex-col flex-1 bg-card dark:bg-transparent" *ngIf="thirdParty">
+  <form class="w-full" #myForm="ngForm" ngForm="ngForm">
+    <!-- Header -->
+    <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
+      <!-- Title -->
+      <div class="hidden md:flex text-3xl font-extrabold tracking-tight">
+        {{ 'Third Party' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 w-full items-center md:mt-3 sm:mt-0">
+        <div class="w-3/4 sm:w-2/3 flex flex-row">
+          <!-- clear project button -->
+          <button class="mr-2 text-red-500" mat-flat-button (click)="deleteThirdParty()">
+            <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+            <span class="ml-2 mr-1">{{ 'Delete' | transloco }}</span>
+          </button>
+        </div>
+        <div class="flex justify-end w-1/4 sm:w-1/3 ml-1 sm:ml-0">
+          <!-- cancel project button -->
+          <button class="mr-2 bg-gray-100" mat-flat-button (click)="addThirdParty()">
+            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+            <span class="ml-2 mr-1">{{ 'Add' | transloco }}</span>
+          </button>
+          <!-- save project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            [color]="'primary'"
+            type="submit"
+            (click)="updateThirdParty()"
+          >
+            <mat-icon [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
+            <span class="ml-2 mr-1">{{ 'Edit' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Main -->
+    <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+      <div class="flex flex-col mb-6 w-full">
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- Type -->
+          <div class="sm:col-span-2">
+            <mat-form-field
+              class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full"
+              *ngIf="thirdParty.thirdPartyTypeId"
+            >
+              <mat-label class="capitalize">{{ 'third party type' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.thirdPartyTypeId.label"
+                matInput
+                name="thirdPartyTypeId"
+                type="text"
+                disabled
+              />
+            </mat-form-field>
+          </div>
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'code' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.code"
+                matInput
+                name="code"
+                type="text"
+                disabled
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['code'] &&
+                (myForm.controls['code'].dirty || myForm.submitted) &&
+                myForm.controls['code'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- nature -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'nature' | transloco }}</mat-label>
+              <input [(ngModel)]="thirdParty.nature" matInput name="type" type="text" disabled />
+            </mat-form-field>
+          </div>
+          <div class="sm:col-span-2" *ngIf="thirdParty.nature === Natures.moral">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'label' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.label"
+                matInput
+                name="label"
+                type="text"
+                disabled
+                [required]="thirdParty.nature === Natures.moral"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['label'] &&
+                (myForm.controls['label'].dirty || myForm.submitted) &&
+                myForm.controls['label'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-6 p-3" *ngIf="thirdParty.nature === Natures.physical">
+          <!-- first name -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'first name' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.firstName"
+                matInput
+                name="firstName"
+                type="text"
+                disabled
+                [required]="thirdParty.nature === Natures.physical"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['firstName'] &&
+                (myForm.controls['firstName'].dirty || myForm.submitted) &&
+                myForm.controls['firstName'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- last name -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'last name' | transloco }}</mat-label>
+              <input
+                disabled
+                [(ngModel)]="thirdParty.lastName"
+                matInput
+                name="lastName"
+                type="text"
+                [required]="thirdParty.nature === Natures.physical"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['lastName'] &&
+                (myForm.controls['lastName'].dirty || myForm.submitted) &&
+                myForm.controls['lastName'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- type identifier -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'type identifier' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.typeIdentifier"
+                matInput
+                name="typeIdentifier"
+                type="text"
+                disabled
+              />
+            </mat-form-field>
+          </div>
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'identifier' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.identifier"
+                matInput
+                name="identifier"
+                type="text"
+                disabled
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['identifier'] &&
+                (myForm.controls['identifier'].dirty || myForm.submitted) &&
+                myForm.controls['identifier'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- address -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'address' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.address"
+                matInput
+                name="address"
+                type="text"
+                disabled
+              />
+            </mat-form-field>
+          </div>
+          <!-- postal code -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'postal code' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.postalCode"
+                matInput
+                name="postal-code"
+                type="text"
+                disabled
+              />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- phone number -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'phone number' | transloco }}</mat-label>
+              <input [(ngModel)]="thirdParty.phone" matInput name="phone" type="text" disabled />
+            </mat-form-field>
+          </div>
+          <!-- fax -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'fax' | transloco }}</mat-label>
+              <input [(ngModel)]="thirdParty.fax" matInput name="fax" type="text" disabled />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- email -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'email' | transloco }}</mat-label>
+              <input [(ngModel)]="thirdParty.email" matInput name="email" type="email" disabled />
+            </mat-form-field>
+          </div>
+          <!-- web site -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'web site' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.webSite"
+                matInput
+                name="webSite"
+                type="text"
+                disabled
+              />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- Manager name -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'manager name' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.managerName"
+                matInput
+                name="manager"
+                type="text"
+                disabled
+              />
+            </mat-form-field>
+          </div>
+          <!-- activity domain -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'activity domain' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="thirdParty.activityDomain"
+                matInput
+                name="activity"
+                type="text"
+                disabled
+              />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- gender -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'gender' | transloco }}</mat-label>
+              <input [(ngModel)]="thirdParty.gender" matInput name="gender" type="text" disabled />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

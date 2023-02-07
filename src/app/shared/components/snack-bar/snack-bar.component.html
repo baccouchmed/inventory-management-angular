@@ -1,0 +1,23 @@
+<div class="snackbar-container">
+  <div>
+    <mat-icon *ngIf="data.type === 'primary'" [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+
+    <mat-icon *ngIf="data.type === 'accent'" [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+
+    <mat-icon *ngIf="data.type === 'warn'" [svgIcon]="'heroicons_solid:x-circle'"></mat-icon>
+
+    <mat-icon *ngIf="data.type === 'basic'" [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+
+    <mat-icon
+      *ngIf="data.type === 'info'"
+      [svgIcon]="'heroicons_solid:information-circle'"
+    ></mat-icon>
+
+    <mat-icon *ngIf="data.type === 'success'" [svgIcon]="'heroicons_solid:check-circle'"></mat-icon>
+
+    <mat-icon *ngIf="data.type === 'warning'" [svgIcon]="'heroicons_solid:exclamation'"></mat-icon>
+
+    <mat-icon *ngIf="data.type === 'error'" [svgIcon]="'heroicons_solid:x-circle'"></mat-icon>
+  </div>
+  <span>{{ data.message }}</span>
+</div>
