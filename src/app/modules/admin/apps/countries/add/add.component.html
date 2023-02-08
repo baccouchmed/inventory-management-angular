@@ -1,0 +1,322 @@
+<div class="flex flex-col flex-1 bg-card dark:bg-transparent">
+  <form class="w-full" #myForm="ngForm" ngForm="ngForm">
+    <!-- Header -->
+    <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-0" *ngIf="loading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
+      <!-- Title -->
+      <div class="hidden md:flex text-3xl font-extrabold tracking-tight">
+        {{ 'Countries' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 w-full items-center md:mt-3 sm:mt-0">
+        <div class="w-3/4 sm:w-2/3 flex flex-row">
+          <!-- clear project button -->
+          <button
+            class="mr-2 text-red-500"
+            mat-flat-button
+            type="button"
+            (click)="resetForm(myForm, $event)"
+            [disabled]="loading"
+          >
+            <span class="ml-2 mr-1">{{ 'Clear' | transloco }}</span>
+          </button>
+        </div>
+        <div class="flex justify-end w-1/4 sm:w-1/3 ml-1 sm:ml-0">
+          <!-- cancel project button -->
+          <button class="mr-2" mat-flat-button (click)="cancelForm(myForm)" [disabled]="loading">
+            <span class="ml-2 mr-1">{{ 'Cancel' | transloco }}</span>
+          </button>
+          <!-- save project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            [color]="'primary'"
+            type="submit"
+            (click)="createCountry(myForm)"
+            [disabled]="loading"
+            *appFeatures="[
+              {
+                code: featureCodes.countries,
+                actions: [featureActions.create]
+              }
+            ]"
+          >
+            <span class="ml-2 mr-1">{{ 'Save' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+      <div class="flex flex-col mb-6 w-full">
+        <div class="grid sm:grid-cols-11 gap-6 p-3">
+          <!-- code -->
+          <div class="sm:col-span-5">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'code' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="country.code"
+                matInput
+                name="code"
+                type="text"
+                required
+                [disabled]="loading"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['code'] &&
+                (myForm.controls['code'].dirty || myForm.submitted) &&
+                myForm.controls['code'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- label -->
+          <div class="sm:col-span-5">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'Country' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="country.countryName"
+                matInput
+                name="countryName"
+                type="text"
+                required
+                [disabled]="loading"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['countryName'] &&
+                (myForm.controls['countryName'].dirty || myForm.submitted) &&
+                myForm.controls['countryName'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+        <div class="flex flex-col mb-6 w-full bg-gray-100">
+          <div class="flex text-2xl font-extrabold tracking-tight ml-4 capitalize"></div>
+          <div class="grid grid-cols-1 min-w-full gap-1 min-w-full">
+            <div class="grid grid-cols-12 gap-6 p-3">
+              <div class="col-span-5 flex flex-row justify-center capitalize">
+                {{ 'code' | transloco }}
+              </div>
+              <div class="col-span-5 flex flex-row justify-center capitalize">
+                {{ 'delegation' | transloco }}
+              </div>
+              <div class="col-span-1 flex flex-row justify-center capitalize"></div>
+              <div class="col-span-1 flex flex-row justify-center capitalize"></div>
+            </div>
+            <div
+              *ngFor="
+                let delegation of delegations;
+                let index = index;
+                let last = last;
+                let first = first
+              "
+            >
+              <div class="grid grid-cols-12 gap-6 p-3">
+                <div class="col-span-5">
+                  <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                    <input
+                      [(ngModel)]="delegation.code"
+                      matInput
+                      name="code-delegation{{ index }}"
+                      type="text"
+                      [required]="delegations.length > 1"
+                      [disabled]="loading"
+                    />
+                  </mat-form-field>
+                  <mat-error
+                    *ngIf="
+                      myForm.controls['code-delegation{{index}}'] &&
+                      (myForm.controls['code-delegation{{ index }}'].dirty || myForm.submitted) &&
+                      myForm.controls['code-delegation{{ index }}'].hasError('required')
+                    "
+                  >
+                    {{ 'This field is required' | transloco }}
+                  </mat-error>
+                </div>
+                <div class="col-span-5">
+                  <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                    <input
+                      [(ngModel)]="delegation.delegationName"
+                      matInput
+                      name="delegationName{{ index }}"
+                      type="text"
+                      [required]="delegations.length > 1"
+                      [disabled]="loading"
+                    />
+                  </mat-form-field>
+                  <mat-error
+                    *ngIf="
+                      myForm.controls['delegationName{{ index }}'] &&
+                      (myForm.controls['delegationName{{ index }}'].dirty || myForm.submitted) &&
+                      myForm.controls['delegationName{{ index }}'].hasError('required')
+                    "
+                  >
+                    {{ 'This field is required' | transloco }}
+                  </mat-error>
+                </div>
+                <div class="col-span-1 flex justify-center">
+                  <button
+                    class="mr-1"
+                    type="button"
+                    mat-icon-button
+                    (click)="
+                      selectedDelegation !== delegation
+                        ? openDetails(delegation, $event)
+                        : closeDetails()
+                    "
+                  >
+                    <mat-icon
+                      class="icon-size-5"
+                      [svgIcon]="'heroicons_outline:chevron-down'"
+                      *ngIf="selectedDelegation !== delegation"
+                    ></mat-icon>
+                    <mat-icon
+                      class="icon-size-5"
+                      [svgIcon]="'heroicons_outline:chevron-up'"
+                      *ngIf="selectedDelegation === delegation"
+                    ></mat-icon>
+                  </button>
+                </div>
+
+                <div class="col-span-1 flex justify-center">
+                  <button
+                    *ngIf="!first"
+                    mat-icon-button
+                    type="button"
+                    (click)="deleteRow(index, $event)"
+                    [disabled]="loading"
+                  >
+                    <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                  </button>
+                  <button
+                    *ngIf="last"
+                    mat-icon-button
+                    type="button"
+                    (click)="addRow($event)"
+                    [disabled]="loading"
+                  >
+                    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="shadow-lg bg-gray-100" *ngIf="selectedDelegation === delegation">
+                <div class="grid grid-cols-12 gap-6 p-3">
+                  <div class="hidden sm:flex col-span-5">
+                    <span class="capitalize">{{ 'code' | transloco }}</span>
+                  </div>
+                  <div class="hidden sm:flex col-span-5">
+                    <span class="capitalize">{{ 'city' | transloco }}</span>
+                  </div>
+                </div>
+                <div class="hidden sm:flex col-span-1"></div>
+                <div class="hidden sm:flex col-span-1"></div>
+              </div>
+
+              <div class="flex flex-col" *ngIf="selectedDelegation === delegation">
+                <div
+                  class="grid grid-cols-12 gap-6 p-3"
+                  *ngFor="
+                    let city of cities[index];
+                    let index1 = index;
+                    let last = last;
+                    trackBy: trackByFn
+                  "
+                >
+                  <div class="col-span-5">
+                    <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                      <input
+                        [(ngModel)]="cities[index][index1].code"
+                        matInput
+                        name="code{{ index }}{{ index1 }}"
+                        type="text"
+                      />
+                    </mat-form-field>
+                    <mat-error
+                      *ngIf="
+                        myForm.controls['code{{ index }}{{ index1 }}'] &&
+                        (myForm.controls['code{{ index }}{{ index1 }}'].dirty ||
+                          myForm.submitted) &&
+                        myForm.controls['code{{ index }}{{ index1 }}'].hasError('required')
+                      "
+                    >
+                      {{ 'This field is required' | transloco }}
+                    </mat-error>
+                  </div>
+                  <div class="col-span-5">
+                    <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+                      <input
+                        [(ngModel)]="cities[index][index1].cityName"
+                        matInput
+                        name="volumeTo{{ index }}{{ index1 }}"
+                        type="text"
+                      />
+                    </mat-form-field>
+                    <mat-error
+                      *ngIf="
+                        myForm.controls['volumeTo{{ index }}{{ index1 }}'] &&
+                        (myForm.controls['volumeTo{{ index }}{{ index1 }}'].dirty ||
+                          myForm.submitted) &&
+                        myForm.controls['volumeTo{{ index }}{{ index1 }}'].hasError('min')
+                      "
+                    >
+                      {{ 'This field is required' | transloco }}
+                    </mat-error>
+                  </div>
+                  <div class="col-span-1"></div>
+                  <div class="col-span-1">
+                    <div class="hidden sm:flex">
+                      <button
+                        class="mr-1"
+                        type="button"
+                        mat-icon-button
+                        [matMenuTriggerFor]="budgetMenu"
+                      >
+                        <mat-icon
+                          class="icon-size-5"
+                          [svgIcon]="'heroicons_solid:dots-vertical'"
+                        ></mat-icon>
+                      </button>
+                      <mat-menu #budgetMenu="matMenu">
+                        <button
+                          mat-menu-item
+                          type="button"
+                          class="flex justify-between"
+                          (click)="addCityRow(index, index1, $event)"
+                        >
+                          <span class="ml-2 mr-1 hidden sm:block">{{ 'Add' | transloco }}</span>
+                          <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+                        </button>
+                        <button
+                          mat-menu-item
+                          class="flex justify-between"
+                          (click)="deleteCityRow(index, index1, $event)"
+                          [disabled]="cities[index].length < 2"
+                        >
+                          <span class="ml-2 mr-1 hidden sm:block">{{ 'Delete' | transloco }}</span>
+                          <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                        </button>
+                      </mat-menu>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

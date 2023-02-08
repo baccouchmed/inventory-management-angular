@@ -234,13 +234,26 @@ export const appRoutes: Route[] = [
           {
             canActivate: [IsAuthorizedGuard],
             canActivateChild: [IsAuthorizedGuard],
-            path: 'shop',
+            path: 'store',
             data: {
-              breadcrumb: 'Shop',
-              feature: FeatureCodes.products,
+              breadcrumb: 'Store',
+              feature: FeatureCodes.store,
             },
             loadChildren: () =>
-              import('app/modules/admin/apps/shop/shop.module').then((m) => m.ShopModule),
+              import('app/modules/admin/apps/store/store.module').then((m) => m.StoreModule),
+          },
+          {
+            canActivate: [IsAuthorizedGuard],
+            canActivateChild: [IsAuthorizedGuard],
+            path: 'countries',
+            data: {
+              breadcrumb: 'Countries',
+              feature: FeatureCodes.countries,
+            },
+            loadChildren: () =>
+              import('app/modules/admin/apps/countries/countries.module').then(
+                (m) => m.CountriesModule,
+              ),
           },
           {
             canActivate: [IsAuthorizedGuard],
@@ -266,6 +279,19 @@ export const appRoutes: Route[] = [
             loadChildren: () =>
               import('app/modules/admin/apps/typethirdparty/typethirdparty.module').then(
                 (m) => m.TypethirdpartyModule,
+              ),
+          },
+          {
+            canActivate: [IsAuthorizedGuard],
+            canActivateChild: [IsAuthorizedGuard],
+            path: 'contracts',
+            data: {
+              breadcrumb: 'Contracts',
+              feature: FeatureCodes.contracts,
+            },
+            loadChildren: () =>
+              import('app/modules/admin/apps/contracts/contracts.module').then(
+                (m) => m.ContractsModule,
               ),
           },
           {

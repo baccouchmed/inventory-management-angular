@@ -26,16 +26,16 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { NgApexchartsModule } from 'ng-apexcharts';
-import { ShopComponent } from './shop.component';
+import { StoreComponent } from './store.component';
 import { ListComponent } from './list/list.component';
 import { TranslocoRootModule } from '../../../../transloco/transloco-root.module';
 import { MatSelectFilterModule } from 'mat-select-filter';
-import { shopRoutes } from './shop.routing';
+import { storeRoutes } from './store.routing';
 
 @NgModule({
-  declarations: [ShopComponent, ListComponent],
+  declarations: [StoreComponent, ListComponent],
   imports: [
-    RouterModule.forChild(shopRoutes),
+    RouterModule.forChild(storeRoutes),
     MatButtonModule,
     MatCheckboxModule,
     MatDatepickerModule,
@@ -85,4 +85,4 @@ import { shopRoutes } from './shop.routing';
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class ShopModule {}
+export class StoreModule {}

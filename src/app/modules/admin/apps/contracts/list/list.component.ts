@@ -1,20 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { UserService } from '../../../../../shared/services/user.service';
+import { CompanyService } from '../../../../../shared/services/company.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FuseConfirmationService } from '../../../../../../@fuse/services/confirmation';
 import { FuseMediaWatcherService } from '../../../../../../@fuse/services/media-watcher';
+import { User } from '../../../../../shared/models/user';
 import { MatPaginator } from '@angular/material/paginator';
 import { FilterOptions } from '../../../../../shared/models/filter-options';
+import { Company } from '../../../../../shared/models/company';
 import { Pagination } from '../../../../../shared/models/pagination';
 import { environment } from '../../../../../../environments/environment';
-import { UserState } from '../../../../../shared/enums/userState';
-import { FeatureCodes } from '../../../../../shared/enums/feature-codes';
-import { FeatureActions } from '../../../../../shared/enums/feature-actions';
-import { CompanyProductService } from '../../../../../shared/services/company-product.service';
-import { CompanyProduct, Product, ProductStock, TypeProduct } from 'app/shared/models/inventory';
-import { FilterProduct } from 'app/shared/models/filter-product';
-import { forkJoin } from 'rxjs';
-import * as moment from 'moment';
-import { InventoryService } from 'app/shared/services/inventory.service';
 
 @Component({
   selector: 'app-list',
@@ -25,33 +20,28 @@ export class ListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   filterOptions: FilterOptions = new FilterOptions();
-  listUserState = UserState;
+  company: Company;
   currentSize = 10;
   currentPage = 1;
-  displayedList: Pagination<Product>;
+  displayedList: Pagination<Company>;
   typingTimer;
   doneTypingInterval = 500;
+  user: User;
+  connectedUser: User;
   url = `${environment.api}/public/`;
+  urlFlag = `${environment.services.i18n.url}/assets/`;
+
   isScreenSmall: boolean;
-  openFilters: boolean = false;
   path: string;
   searchFilter: string;
   isLoading = false;
   count: number;
-  sortCode: string;
+  sortType: string;
   sortName: string;
-  featureCodes = FeatureCodes;
-  featureActions = FeatureActions;
-  urlLogo = `${environment.api}/public/logo/`;
-  filterProduct = new FilterProduct();
-  listCompanies: CompanyProduct[];
-  filteredListCompanies = [];
-  listTypeProducts: TypeProduct[];
-  filteredListTypeProducts = [];
 
   constructor(
-    private companyProductService: CompanyProductService,
-    private inventoryService: InventoryService,
+    private userService: UserService,
+    private companyService: CompanyService,
     private _router: Router,
     private route: ActivatedRoute,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
@@ -64,23 +54,15 @@ export class ListComponent implements OnInit {
       // Check if the screen is small
       this.isScreenSmall = !matchingAliases.includes('sm');
     });
-    const obs = [
-      this.companyProductService.getAllTypeProducts(),
-      this.companyProductService.getListCompanies(),
-    ];
-    this.isLoading = true;
-    forkJoin(obs).subscribe(
-      (result: [TypeProduct[], CompanyProduct[]]) => {
-        this.listCompanies = result[1];
-        this.filteredListCompanies = this.listCompanies;
-        this.listTypeProducts = result[0];
-        this.filteredListTypeProducts = this.listTypeProducts;
-        this.getList();
+    // eslint-disable-next-line prefer-destructuring
+    this.path = window.location.pathname.split('/apps/')[1];
+    this.userService.getUserProfile().subscribe(
+      (res: User) => {
+        this.connectedUser = res;
       },
-      () => {
-        this.isLoading = false;
-      },
+      () => {},
     );
+    this.getList();
   }
   pageChanged(event): void {
     let { pageIndex } = event;
@@ -96,10 +78,16 @@ export class ListComponent implements OnInit {
   }
   getList(): void {
     this.isLoading = true;
-    this.companyProductService
-      .getProducts(this.currentSize, this.currentPage, this.searchFilter)
+    this.companyService
+      .getContracts(
+        this.currentSize,
+        this.currentPage,
+        this.filterOptions.sortType,
+        this.filterOptions.sortName,
+        this.filterOptions.search,
+      )
       .subscribe(
-        (res: Pagination<Product>) => {
+        (res: Pagination<Company>) => {
           this.displayedList = res;
           this.isLoading = false;
         },
@@ -117,8 +105,8 @@ export class ListComponent implements OnInit {
   openShow(row) {
     this._router.navigate([`${row._id}`], { relativeTo: this.route });
   }
-  openEdit(user) {
-    this._router.navigate([`${user._id}/edit`], { relativeTo: this.route });
+  openEdit(company) {
+    this._router.navigate([`${company._id}/edit`], { relativeTo: this.route });
   }
   updateSearch() {
     clearTimeout(this.typingTimer);
@@ -132,14 +120,14 @@ export class ListComponent implements OnInit {
   updateSort(sort) {
     this.isLoading = true;
     switch (sort) {
-      case 'sortCode':
-        if (this.sortCode === 'up') {
-          this.sortCode = 'down';
+      case 'sortType':
+        if (this.sortType === 'up') {
+          this.sortType = 'down';
         } else {
-          this.sortCode = 'up';
+          this.sortType = 'up';
         }
         this.filterOptions.sortName = null;
-        this.filterOptions.sortCode = this.sortCode;
+        this.filterOptions.sortType = this.sortType;
         break;
       case 'sortName':
         if (this.sortName === 'up') {
@@ -147,17 +135,40 @@ export class ListComponent implements OnInit {
         } else {
           this.sortName = 'up';
         }
-        this.filterOptions.sortCode = null;
+        this.filterOptions.sortType = null;
         this.filterOptions.sortName = this.sortName;
         break;
       default:
         break;
     }
-
     this.getList();
   }
+  addCompany(): void {
+    this._router.navigate(['add'], { relativeTo: this.route });
+  }
+  deleteCompany(company) {
+    // Open the confirmation dialog
+    const confirmation = this._fuseConfirmationService.open({
+      title: 'Delete',
+      message: 'Would you like to confirm the deletion ?',
+      actions: {
+        confirm: {
+          label: 'yes',
+        },
+        cancel: {
+          label: 'no',
+        },
+      },
+    });
 
-  openFilter() {
-    this.openFilters = !this.openFilters;
+    // Subscribe to the confirmation dialog closed action
+    confirmation.afterClosed().subscribe((result) => {
+      // If the confirm button pressed...
+      if (result === 'confirmed') {
+        this.companyService.deleteCompany(company._id).subscribe(() => {
+          this.getList();
+        });
+      }
+    });
   }
 }

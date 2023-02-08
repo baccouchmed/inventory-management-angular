@@ -6,7 +6,7 @@ export enum FeatureCodes {
   stage = 'stage',
   typePrice = 'type-price',
   destination = 'destination',
-  currencies = 'currencies',
+  contracts = 'contracts',
   administration = 'administration',
   company = 'company',
   features = 'features',
@@ -29,6 +29,7 @@ export enum FeatureCodes {
   subcategory = 'subcategory',
   product = 'product',
   products = 'products',
+  store = 'store',
 }
 
 export const listFeatureActions: RefList<FeatureCodes>[] = [
@@ -37,7 +38,7 @@ export const listFeatureActions: RefList<FeatureCodes>[] = [
   { key: FeatureCodes.stage, value: 'Stage' },
   { key: FeatureCodes.typePrice, value: 'Type Price' },
   { key: FeatureCodes.destination, value: 'Destination' },
-  { key: FeatureCodes.currencies, value: 'Currencies' },
+  { key: FeatureCodes.contracts, value: 'Contracts' },
   { key: FeatureCodes.administration, value: 'Administration' },
   { key: FeatureCodes.company, value: 'Company' },
   { key: FeatureCodes.features, value: 'Features' },
@@ -59,4 +60,5 @@ export const listFeatureActions: RefList<FeatureCodes>[] = [
   { key: FeatureCodes.subcategory, value: 'subcategory' },
   { key: FeatureCodes.product, value: 'product' },
   { key: FeatureCodes.products, value: 'products' },
+  { key: FeatureCodes.store, value: 'store' },
 ];

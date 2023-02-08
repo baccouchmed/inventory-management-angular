@@ -8,7 +8,7 @@
       <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
     </div>
     <!-- Title -->
-    <div class="hidden sm:flex text-3xl font-extrabold">{{ 'Stocks' | transloco }}</div>
+    <div class="hidden sm:flex text-3xl font-extrabold">{{ 'Store' | transloco }}</div>
     <!-- Actions -->
     <div class="flex flex-shrink-0 w-full items-center md:mt-4 sm:mt-0">
       <div class="w-3/4 sm:w-2/3 flex flex-row">
@@ -145,8 +145,7 @@
               <span>{{ 'Product' | transloco }}</span>
             </div>
             <div class="flex">{{ 'In stock' | transloco }}</div>
-            <div class="flex">{{ 'Min stock' | transloco }}</div>
-            <div class="flex">{{ 'Unit price' | transloco }}</div>
+            <div class="flex justify-center">{{ 'Status' | transloco }}</div>
           </div>
           <div class="flex-1 overflow-hidden sm:overflow-y-auto">
             <div class="flex-1 sm:grid sm:flex-0">
@@ -207,8 +206,12 @@
                         />
                       </mat-form-field>
                     </div>
-                    <div class="hidden sm:flex"></div>
-                    <div class="hidden sm:flex"></div>
+                    <div class="hidden sm:flex justify-center">
+                      <mat-slide-toggle
+                        [(ngModel)]="product.status"
+                        (click)="addToStore(product)"
+                      ></mat-slide-toggle>
+                    </div>
                     <div></div>
                   </div>
                 </ng-container>

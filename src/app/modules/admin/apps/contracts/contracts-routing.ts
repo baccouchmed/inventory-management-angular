@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { ListComponent } from './list/list.component';
-export const shopRoutes: Route[] = [
+
+export const contractsRoutes: Route[] = [
   {
     path: '',
     children: [
@@ -8,7 +9,7 @@ export const shopRoutes: Route[] = [
         path: '',
         component: ListComponent,
         data: {
-          breadcrumb: 'Stocks',
+          breadcrumb: 'Contracts',
         },
       },
     ],

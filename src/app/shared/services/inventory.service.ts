@@ -29,6 +29,11 @@ export class InventoryService {
       unitPrice,
     });
   }
+  updateStore(id, status): Observable<null> {
+    return this.http.patch<null>(`${this.endpoint}/store/${id}`, {
+      disable: status,
+    });
+  }
   deductStock(id, quantityOut): Observable<null> {
     return this.http.patch<null>(`${this.endpoint}/stocks/${id}/deduct`, {
       quantityOut,

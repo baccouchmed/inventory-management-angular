@@ -48,6 +48,23 @@ export class CompanyService {
       params: searchParams,
     });
   }
+  getContracts(limit, page, sortCode, sortName, search): Observable<Pagination<Company>> {
+    let searchParams = new HttpParams();
+    searchParams = searchParams.append('limit', limit);
+    searchParams = searchParams.append('page', page);
+    if (search) {
+      searchParams = searchParams.append('search', search);
+    }
+    if (sortCode) {
+      searchParams = searchParams.append('sortCode', sortCode);
+    }
+    if (sortName) {
+      searchParams = searchParams.append('sortName', sortName);
+    }
+    return this.http.get<Pagination<Company>>(`${this.endpoint}/contracts`, {
+      params: searchParams,
+    });
+  }
   getCompany(id: string): Observable<Company> {
     return this.http.get<Company>(`${this.endpoint}/${id}`);
   }

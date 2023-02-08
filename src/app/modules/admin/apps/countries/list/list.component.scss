@@ -1,0 +1,15 @@
+.country-grid {
+  grid-template-columns: 150px auto ;
+
+  @screen sm {
+    grid-template-columns: 200px auto 30px;
+  }
+
+  @screen md {
+    grid-template-columns: 300px auto 50px;
+  }
+
+  @screen lg {
+    grid-template-columns: 400px auto  50px;
+  }
+}

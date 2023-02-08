@@ -46,6 +46,7 @@ export class Product {
   unitPrice?: number;
   logo?: string;
   myStock?: string;
+  status?: boolean;
 }
 export class ProductStock {
   id?: string;
