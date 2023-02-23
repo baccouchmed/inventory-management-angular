@@ -15,6 +15,8 @@ import { FilterProduct } from 'app/shared/models/filter-product';
 import { forkJoin } from 'rxjs';
 import * as moment from 'moment';
 import { InventoryService } from 'app/shared/services/inventory.service';
+import { BadgeService } from '../../../../../shared/services/badge.service';
+import { UserService } from '../../../../../shared/services/user.service';
 
 @Component({
   selector: 'app-list',
@@ -48,7 +50,11 @@ export class ListComponent implements OnInit {
   filteredListCompanies = [];
   listTypeProducts: TypeProduct[];
   filteredListTypeProducts = [];
-
+  advancedFilter: any;
+  typeProduct: TypeProduct;
+  companyProduct: CompanyProduct;
+  inStock: number;
+  minStock: boolean = false;
   constructor(
     private companyProductService: CompanyProductService,
     private inventoryService: InventoryService,
@@ -56,6 +62,8 @@ export class ListComponent implements OnInit {
     private route: ActivatedRoute,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _fuseConfirmationService: FuseConfirmationService,
+    private badgeService: BadgeService,
+    private userService: UserService,
   ) {}
 
   ngOnInit(): void {
@@ -97,7 +105,16 @@ export class ListComponent implements OnInit {
   getList(): void {
     this.isLoading = true;
     this.companyProductService
-      .getProducts(this.currentSize, this.currentPage, this.searchFilter)
+      .getProducts(
+        this.currentSize,
+        this.currentPage,
+        this.searchFilter,
+        null,
+        this.typeProduct ? this.typeProduct._id : null,
+        this.companyProduct ? this.companyProduct._id : null,
+        this.inStock || null,
+        this.minStock,
+      )
       .subscribe(
         (res: Pagination<Product>) => {
           this.displayedList = res;
@@ -162,7 +179,18 @@ export class ListComponent implements OnInit {
   }
 
   addToStore(product: Product) {
-    console.log(product);
-    this.inventoryService.updateStore(product._id, product.status).subscribe();
+    this.inventoryService.updateStore(product._id, product.status).subscribe(() => {
+      this.badgeService.badgeStores().subscribe(() => {
+        let navigation = this.userService._navigations.getValue();
+        navigation[
+          navigation.findIndex((val) => val.code === FeatureCodes.setting.toString())
+        ].children[
+          navigation[
+            navigation.findIndex((val) => val.code === FeatureCodes.setting.toString())
+          ].children.findIndex((val) => val.code === FeatureCodes.store.toString())
+        ].badge.title = this.badgeService._badgeStore.getValue();
+        this.userService._navigations.next(navigation);
+      });
+    });
   }
 }

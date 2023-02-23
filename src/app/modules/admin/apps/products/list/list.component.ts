@@ -47,6 +47,9 @@ export class ListComponent implements OnInit {
   filteredListCompanies = [];
   listTypeProducts: TypeProduct[];
   filteredListTypeProducts = [];
+  advancedFilter: any;
+  typeProduct: TypeProduct;
+  companyProduct: CompanyProduct;
 
   constructor(
     private companyProductService: CompanyProductService,
@@ -95,7 +98,14 @@ export class ListComponent implements OnInit {
   getList(): void {
     this.isLoading = true;
     this.companyProductService
-      .getProducts(this.currentSize, this.currentPage, this.searchFilter)
+      .getProducts(
+        this.currentSize,
+        this.currentPage,
+        this.searchFilter,
+        null,
+        this.typeProduct ? this.typeProduct._id : null,
+        this.companyProduct ? this.companyProduct._id : null,
+      )
       .subscribe(
         (res: Pagination<Product>) => {
           this.displayedList = res;

@@ -1,4 +1,6 @@
 import { TypeCompany } from '../enums/types-company';
+import { Country, Governorate, Municipality } from './country';
+import { StatusContract } from '../enums/status-contract';
 
 export class Company {
   id?: string;
@@ -14,4 +16,9 @@ export class Company {
   logo?: string;
   createdAt?: string;
   type?: TypeCompany;
+  governorateId?: Governorate;
+  municipalityId?: Municipality;
+  countryId?: Country;
+  statusContract?: StatusContract;
+  creator?: boolean;
 }

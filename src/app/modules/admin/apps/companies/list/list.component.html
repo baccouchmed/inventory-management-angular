@@ -50,31 +50,18 @@
 
           <div
             class="company-grid grid z-10 top-0 shadow items-center gap-4 py-4 px-4 md:px-6 text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
-            matSort
-            matSortDisableClear
           >
-            <div
-              class="flex cursor-pointer"
-              [mat-sort-header]="'code'"
-              (click)="updateSort('sortCode')"
-            >
-              <span class="capitalize">{{ 'code' | transloco }}</span>
+            <div class="flex">
+              <span class="capitalize">{{ 'N°' | transloco }}</span>
             </div>
-            <div
-              class="flex cursor-pointer"
-              [mat-sort-header]="'name'"
-              (click)="updateSort('sortName')"
-            >
+            <div class="flex">
+              <span class="capitalize">{{ 'type' | transloco }}</span>
+            </div>
+            <div class="flex">
               <span class="capitalize">{{ 'name' | transloco }}</span>
             </div>
             <div class="hidden md:flex">
               <span class="capitalize">{{ 'address' | transloco }}</span>
-            </div>
-            <div class="flex">
-              <span class="capitalize">{{ 'email' | transloco }}</span>
-            </div>
-            <div class="flex">
-              <span class="capitalize">{{ 'phone' | transloco }}</span>
             </div>
             <div class="hidden sm:flex"></div>
           </div>
@@ -82,12 +69,15 @@
             <div class="flex-1 sm:grid sm:flex-0">
               <!-- Rows -->
               <ng-container>
-                <ng-container *ngFor="let company of displayedList?.data">
+                <ng-container *ngFor="let company of displayedList?.data; let index = index">
                   <div
                     class="company-grid grid items-center gap-4 py-4 px-4 md:px-6 border-b"
                     (click)="isScreenSmall ? openShow(company) : null"
                   >
-                    <div class="truncate">{{ company.code }}</div>
+                    <div class="truncate">{{ index + 1 }}</div>
+                    <div class="truncate">
+                      <span *ngIf="company.type">{{ company.type }}</span>
+                    </div>
                     <div class="truncate">{{ company.name }}</div>
                     <div class="hidden md:flex truncate">
                       <span class="truncate" *ngIf="company.address">
@@ -96,12 +86,15 @@
                       <span class="truncate" *ngIf="company.postalCode">
                         ({{ company.postalCode }})
                       </span>
-                    </div>
-                    <div class="truncate">
-                      <span *ngIf="company.email">{{ company.email }}</span>
-                    </div>
-                    <div class="truncate">
-                      <span *ngIf="company.phone">{{ company.phone }}</span>
+                      <span class="truncate" *ngIf="company.municipalityId">
+                        , {{ company.municipalityId?.municipalityName }}
+                      </span>
+                      <span class="truncate" *ngIf="company.governorateId">
+                        , {{ company.governorateId?.governorateName }}
+                      </span>
+                      <span class="truncate" *ngIf="company.countryId">
+                        , {{ company.countryId?.countryName }}
+                      </span>
                     </div>
                     <div class="hidden sm:flex">
                       <button class="mr-4" mat-icon-button [matMenuTriggerFor]="budgetMenu">

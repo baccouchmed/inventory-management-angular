@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Country } from '../models/country';
+import { Country, Governorate, Municipality } from '../models/country';
 import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -48,8 +48,14 @@ export class CountryService {
     return this.http.get<Country>(`${this.endpoint}/${id}`);
   }
   // get cities
-  getCities(id): Observable<City[]> {
-    return this.http.get<City[]>(`${this.endpoint}/${id}/cities`);
+  getAllCountries(): Observable<Country[]> {
+    return this.http.get<Country[]>(`${this.endpoint}/all`);
+  }
+  getMunicipalities(id): Observable<Municipality[]> {
+    return this.http.get<Municipality[]>(`${this.endpoint}/${id}/municipalities`);
+  }
+  getGovernorates(id): Observable<Governorate[]> {
+    return this.http.get<Governorate[]>(`${this.endpoint}/${id}/governorates`);
   }
   // update country
   updateCountry(country: Country, cities: City[], deletedCities: string[]): Observable<null> {

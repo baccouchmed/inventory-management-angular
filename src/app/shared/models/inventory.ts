@@ -1,3 +1,5 @@
+import { Company } from './company';
+
 export class Category {
   id?: string;
   // tslint:disable-next-line:variable-name
@@ -46,6 +48,8 @@ export class Product {
   unitPrice?: number;
   logo?: string;
   myStock?: string;
+  minStock?: string;
+  requestedStock?: number;
   status?: boolean;
 }
 export class ProductStock {
@@ -63,6 +67,7 @@ export class ProductStock {
   quantityTotal?: number;
   quantity?: number;
   minStock?: number;
+  inStock?: number;
   totalOutPrice?: number;
   totalInPrice?: number;
   price?: number;
@@ -72,4 +77,31 @@ export class Quantity {
   date?: string;
   unitPrice?: string;
   totalPrice?: string;
+}
+export class ProductRequest {
+  id?: string;
+  // tslint:disable-next-line:variable-name
+  _id?: string;
+  requesterId?: Company;
+  requestedId?: Company;
+  dueDate?: string;
+  productsId?: {
+    id?: string;
+    // tslint:disable-next-line:variable-name
+    _id?: string;
+    companyProductId?: CompanyProduct;
+    typeProductId?: TypeProduct;
+    companyProductTypeProductId?: CompanyProductTypeProduct;
+    label?: string;
+    quantity?: number;
+    unitPrice?: number;
+    logo?: string;
+    productId?: Product;
+    quantityRequested?: number;
+    quantityValidated?: number;
+  }[];
+  requesterValidation?: boolean;
+  requestedValidation?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }

@@ -43,6 +43,7 @@
     <!-- Main -->
     <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
       <div class="flex flex-col mb-6 w-full">
+        <!-- Logo -->
         <div class="flex justify-center my-4">
           <div class="relative w-40 h-40" *ngIf="company?.logo">
             <img
@@ -60,52 +61,108 @@
             </div>
           </ng-container>
         </div>
-
+        <!-- line 1 -->
         <div class="grid sm:grid-cols-6 gap-6 p-3">
-          <!-- code -->
+          <!-- name -->
           <div class="sm:col-span-2">
             <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'code' | transloco }}</mat-label>
-              <input [(ngModel)]="company.code" matInput name="code" type="text" disabled />
+              <mat-label class="capitalize">{{ 'name' | transloco }}</mat-label>
+              <input [(ngModel)]="company.name" matInput name="name" type="text" disabled />
             </mat-form-field>
           </div>
-          <!-- label -->
+          <!-- email -->
           <div class="sm:col-span-2">
             <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'label' | transloco }}</mat-label>
-              <input [(ngModel)]="company.name" matInput name="label" type="text" disabled />
+              <mat-label class="capitalize">{{ 'email' | transloco }}</mat-label>
+              <input [(ngModel)]="company.email" matInput name="email" type="email" disabled />
             </mat-form-field>
           </div>
-        </div>
-        <div class="grid sm:grid-cols-6 gap-6 p-3">
-          <!-- identifier -->
-          <div class="sm:col-span-2">
-            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'identifier' | transloco }}</mat-label>
-              <input
-                [(ngModel)]="company.identifier"
-                matInput
-                name="identifier"
-                type="text"
-                disabled
-              />
-            </mat-form-field>
-          </div>
-          <!-- phone number -->
+          <!-- phone number 1 -->
           <div class="sm:col-span-2">
             <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
               <mat-label class="capitalize">{{ 'phone number' | transloco }}</mat-label>
               <input [(ngModel)]="company.phone" matInput name="phone" type="text" disabled />
             </mat-form-field>
           </div>
-          <!-- fax -->
+        </div>
+        <!-- line 2 -->
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- country -->
           <div class="sm:col-span-2">
             <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'fax' | transloco }}</mat-label>
-              <input [(ngModel)]="company.fax" matInput name="fax" type="text" disabled />
+              <mat-label class="capitalize">{{ 'country' | transloco }}</mat-label>
+              <mat-select [(ngModel)]="company.countryId" name="countryId" disabled>
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row" *ngIf="company?.countryId">
+                    <span>
+                      {{ company?.countryId?.countryName }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-option [value]="company.countryId" disabled>
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ company?.countryId?.countryName }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- governorate  -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'governorate' | transloco }}</mat-label>
+              <mat-select
+                placeholder="please select a country before"
+                [(ngModel)]="company.governorateId"
+                name="governorateName"
+                disabled
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row">
+                    <span>
+                      {{ company.governorateId?.governorateName }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-option [value]="company.governorateId" disabled>
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block">
+                      {{ company.governorateId?.governorateName }}</span
+                    >
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- municipality  -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'municipality' | transloco }}</mat-label>
+              <mat-select
+                placeholder="please select a governorate before"
+                [(ngModel)]="company.municipalityId"
+                name="municipalityName"
+                disabled
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row">
+                    <span>
+                      {{ company.municipalityId?.municipalityName }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-option [value]="company.municipalityId" disabled>
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block">
+                      {{ company.municipalityId?.municipalityName }}</span
+                    >
+                  </div>
+                </mat-option>
+              </mat-select>
             </mat-form-field>
           </div>
         </div>
+        <!-- line 4 -->
         <div class="grid sm:grid-cols-6 gap-6 p-3">
           <!-- address -->
           <div class="sm:col-span-2">
@@ -125,13 +182,6 @@
                 type="text"
                 disabled
               />
-            </mat-form-field>
-          </div>
-          <!-- email -->
-          <div class="sm:col-span-2">
-            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'email' | transloco }}</mat-label>
-              <input [(ngModel)]="company.email" matInput name="email" type="email" disabled />
             </mat-form-field>
           </div>
         </div>

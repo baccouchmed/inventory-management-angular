@@ -5,16 +5,22 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from './user.service';
 import { environment } from '../../../environments/environment';
+import { BadgeService } from './badge.service';
 
 @Injectable()
 export class AuthService {
   endpoint = `${environment.api}/authentication`;
+
   private _authenticated = false;
 
   /**
    * Constructor
    */
-  constructor(private _httpClient: HttpClient, private _userService: UserService) {}
+  constructor(
+    private _httpClient: HttpClient,
+    private _userService: UserService,
+    private badgeService: BadgeService,
+  ) {}
 
   // -----------------------------------------------------------------------------------------------------
   // @ Accessors
@@ -69,13 +75,15 @@ export class AuthService {
       .pipe(
         switchMap((response: any) => {
           // Store the access token in the local storage
-          this.accessToken = response;
-          const connectedUser = this._userService.decodeToken(response);
+          this.accessToken = response.token;
+          const connectedUser = this._userService.decodeToken(response.token);
+          this.badgeService._badgeStock.next(response.badgeStock);
+          this.badgeService._badgeMyRequest.next(response.badgeMyRequest);
           // @ts-ignore
           this._userService._defaultLink.next(connectedUser?.defaultLink);
           this._authenticated = true;
           // Return a new observable with the response
-          return of(response);
+          return of(response.token);
         }),
       );
   }
@@ -84,8 +92,8 @@ export class AuthService {
     return this._httpClient.post(`${this.endpoint}/refresh-token`, body).pipe(
       switchMap((response: any) => {
         // Store the access token in the local storage
-        this.accessToken = response;
-        return of(response);
+        this.accessToken = response.token;
+        return of(response.token);
       }),
     );
   }
@@ -176,11 +184,11 @@ export class AuthService {
       .pipe(
         switchMap((response: any) => {
           // Store the access token in the local storage
-          this.accessToken = response;
+          this.accessToken = response.token;
           // Set the authenticated flag to true
           this._authenticated = true;
           // Return a new observable with the response
-          return of(response);
+          return of(response.token);
         }),
       );
   }

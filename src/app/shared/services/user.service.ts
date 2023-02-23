@@ -22,6 +22,7 @@ export class UserService {
   _user = new BehaviorSubject<User>(null);
   _defaultLink = new BehaviorSubject<string>(null);
   _features: BehaviorSubject<FeatureAuth[]> = new BehaviorSubject<FeatureAuth[]>(null);
+  _navigations: BehaviorSubject<any[]> = new BehaviorSubject<any[]>(null);
 
   constructor(private http: HttpClient, private router: Router) {}
   set user(value: User) {
@@ -47,6 +48,14 @@ export class UserService {
 
   get features$(): BehaviorSubject<FeatureAuth[]> {
     return this._features;
+  }
+  set navigations(value: any[]) {
+    // Store the value
+    this._navigations.next(value);
+  }
+
+  get navigations$(): BehaviorSubject<any[]> {
+    return this._navigations;
   }
   checkPermission(permissions: FeatureAuth[]): boolean {
     const featuresAuth: FeatureAuth[] = this.features$.getValue();

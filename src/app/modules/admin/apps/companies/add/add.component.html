@@ -81,26 +81,10 @@
 
       <div class="flex flex-col mb-6 w-full">
         <div class="grid sm:grid-cols-6 gap-6 p-3">
-          <!-- code -->
+          <!-- name -->
           <div class="sm:col-span-2">
             <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'code' | transloco }}</mat-label>
-              <input [(ngModel)]="company.code" matInput name="code" type="text" required />
-            </mat-form-field>
-            <mat-error
-              *ngIf="
-                myForm.controls['code'] &&
-                (myForm.controls['code'].dirty || myForm.submitted) &&
-                myForm.controls['code'].hasError('required')
-              "
-            >
-              {{ 'This field is required' | transloco }}
-            </mat-error>
-          </div>
-          <!-- label -->
-          <div class="sm:col-span-2">
-            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'label' | transloco }}</mat-label>
+              <mat-label class="capitalize">{{ 'name' | transloco }}</mat-label>
               <input [(ngModel)]="company.name" matInput name="label" type="text" required />
             </mat-form-field>
             <mat-error
@@ -174,6 +158,166 @@
               <mat-label class="capitalize">{{ 'fax' | transloco }}</mat-label>
               <input [(ngModel)]="company.fax" matInput name="fax" type="text" />
             </mat-form-field>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- country -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'country' | transloco }}</mat-label>
+              <mat-select
+                (selectionChange)="refreshListCountry(selectValueCountryCompany.value)"
+                [value]="company.countryId"
+                [(ngModel)]="company.countryId"
+                name="countryId"
+                #selectValueCountryCompany
+                required
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row" *ngIf="company?.countryId">
+                    <span>
+                      {{ company?.countryId?.countryName }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [displayMember]="'countryName'"
+                  [array]="listCountries"
+                  [showSpinner]="false"
+                  (filteredReturn)="filteredListCountries = $event"
+                ></mat-select-filter>
+                <mat-option [value]="null" *ngIf="company?.countryId">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option
+                  *ngFor="let item of filteredListCountries"
+                  [value]="item"
+                  [disabled]="false"
+                >
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ item.countryName }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['countryId'] &&
+                (myForm.controls['countryId'].dirty || myForm.submitted) &&
+                myForm.controls['countryId'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- governorate -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'governorate' | transloco }}</mat-label>
+              <mat-select
+                placeholder="please select a country before"
+                [value]="company.governorateId"
+                [(ngModel)]="company.governorateId"
+                name="governorateName"
+                (selectionChange)="refreshListGovernorate(selectValueCityCompany.value)"
+                #selectValueCityCompany
+                required
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row">
+                    <span>
+                      {{ company.governorateId?.governorateName }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [displayMember]="'governorateName'"
+                  [array]="listGovernorates"
+                  [showSpinner]="false"
+                  (filteredReturn)="filteredListGovernorates = $event"
+                ></mat-select-filter>
+                <mat-option [value]="null" *ngIf="company?.governorateId">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option
+                  *ngFor="let item of filteredListGovernorates"
+                  [value]="item"
+                  [disabled]="false"
+                >
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ item.governorateName }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['governorateName'] &&
+                (myForm.controls['governorateName'].dirty || myForm.submitted) &&
+                myForm.controls['governorateName'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+          <!-- municipality -->
+          <div class="sm:col-span-2">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'municipality' | transloco }}</mat-label>
+              <mat-select
+                placeholder="please select a governorate before"
+                [value]="company.municipalityId"
+                [(ngModel)]="company.municipalityId"
+                name="municipalityName"
+                (selectionChange)="refreshListMunicipality(selectValueMunicipalityId.value)"
+                #selectValueMunicipalityId
+                required
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row">
+                    <span>
+                      {{ company.municipalityId?.municipalityName }}
+                    </span>
+                  </div>
+                </mat-select-trigger>
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [displayMember]="'municipalityName'"
+                  [array]="listMunicipalities"
+                  [showSpinner]="false"
+                  (filteredReturn)="filteredListMunicipalities = $event"
+                ></mat-select-filter>
+                <mat-option [value]="null" *ngIf="company?.municipalityId">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option
+                  *ngFor="let item of filteredListMunicipalities"
+                  [value]="item"
+                  [disabled]="false"
+                >
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ item.municipalityName }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['municipalityName'] &&
+                (myForm.controls['municipalityName'].dirty || myForm.submitted) &&
+                myForm.controls['municipalityName'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
           </div>
         </div>
         <div class="grid sm:grid-cols-6 gap-6 p-3">

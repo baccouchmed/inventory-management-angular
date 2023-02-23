@@ -7,118 +7,116 @@
     <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
       <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
     </div>
-    <!-- Title -->
-    <div class="hidden sm:flex text-3xl font-extrabold">{{ 'Products' | transloco }}</div>
-    <!-- Actions -->
-    <div class="flex flex-shrink-0 w-full items-center md:mt-4 sm:mt-0">
-      <div class="w-3/4 sm:w-2/3 flex flex-row">
-        <!-- Search -->
-        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-3/4">
-          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
-          <input
-            matInput
-            [(ngModel)]="searchFilter"
-            (ngModelChange)="updateSearch()"
-            [autocomplete]="'off'"
-            placeholder="{{ 'Search' | transloco }}"
-          />
-        </mat-form-field>
-        <!-- Refresh projects list -->
-        <div class="w-1/4">
-          <button class="ml-2 bg-gray-300" mat-flat-button (click)="getList()">
-            <mat-icon svgIcon="heroicons_outline:refresh"></mat-icon>
+    <div class="flex flex-row justify-between w-full items-center md:mt-4 sm:mt-0">
+      <!-- Title -->
+      <div
+        class="hidden sm:flex text-3xl p-3 font-extrabold"
+        [ngClass]="{
+          'text-blue-400 z-60': advancedFilter
+        }"
+      >
+        {{ 'Products' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 items-center p-3">
+        <div class="">
+          <!-- Search -->
+          <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-full">
+            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+            <input
+              matInput
+              [(ngModel)]="searchFilter"
+              (ngModelChange)="updateSearch()"
+              [autocomplete]="'off'"
+              placeholder="{{ 'Search' | transloco }}"
+            />
+          </mat-form-field>
+        </div>
+        <div class="ml-2 h-10">
+          <!-- Add project button -->
+          <button
+            [color]="advancedFilter ? null : 'accent'"
+            mat-raised-button
+            (click)="advancedFilter = !advancedFilter"
+          >
+            <mat-icon
+              class="icon-size-5"
+              [svgIcon]="'heroicons_outline:chevron-down'"
+              *ngIf="!advancedFilter"
+            ></mat-icon>
+            <mat-icon
+              class="icon-size-5"
+              [svgIcon]="'heroicons_outline:chevron-up'"
+              *ngIf="advancedFilter"
+            ></mat-icon>
           </button>
         </div>
       </div>
-      <div class="flex justify-end w-1/4 sm:w-1/3 sm:ml-0">
-        <button class="ml-2 bg-gray-300" mat-flat-button (click)="openFilter()">
-          <mat-icon svgIcon="heroicons_outline:filter"></mat-icon>
-        </button>
-      </div>
     </div>
-    <div class="flex flex-shrink-0 w-full items-center md:mt-4 sm:mt-0">
-      <div class="flex flex-col mb-6 w-full" *ngIf="openFilters">
-        <div class="grid sm:grid-cols-6 gap-6 p-3">
-          <!-- site -->
-          <div class="sm:col-span-3">
-            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'Company' | transloco }}</mat-label>
-              <mat-select
-                placeholder="select site"
-                [(ngModel)]="filterProduct.companyProduct"
-                [disabled]="isLoading"
-                name="siteId"
-              >
-                <mat-select-trigger>
-                  <div class="font-medium items-center flex flex-row">
-                    <span class="">
-                      {{ filterProduct?.companyProduct?.name }}
-                    </span>
-                  </div>
-                </mat-select-trigger>
-                <mat-select-filter
-                  [placeholder]="'Filter'"
-                  [displayMember]="'name'"
-                  [showSpinner]="false"
-                  [array]="listCompanies"
-                  (filteredReturn)="filteredListCompanies = $event"
-                ></mat-select-filter>
-                <mat-option [value]="null">
-                  <div class="font-medium items-center flex flex-row">
-                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
-                  </div>
-                </mat-option>
-                <mat-option *ngFor="let item of filteredListCompanies" [value]="item">
-                  <div class="font-medium items-center flex flex-row">
-                    <span class=""> {{ item.name }}</span>
-                  </div>
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="sm:col-span-3">
-            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'Type product' | transloco }}</mat-label>
-              <mat-select
-                placeholder="select site"
-                [(ngModel)]="filterProduct.typeProduct"
-                [disabled]="isLoading"
-                name="siteId"
-              >
-                <mat-select-trigger>
-                  <div class="font-medium items-center flex flex-row">
-                    <span class="">
-                      {{ filterProduct?.typeProduct?.label }}
-                    </span>
-                  </div>
-                </mat-select-trigger>
-                <mat-select-filter
-                  [placeholder]="'Filter'"
-                  [displayMember]="'label'"
-                  [showSpinner]="false"
-                  [array]="listTypeProducts"
-                  (filteredReturn)="filteredListTypeProducts = $event"
-                ></mat-select-filter>
-                <mat-option [value]="null">
-                  <div class="font-medium items-center flex flex-row">
-                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
-                  </div>
-                </mat-option>
-                <mat-option *ngFor="let item of filteredListTypeProducts" [value]="item">
-                  <div class="font-medium items-center flex flex-row">
-                    <span class=""> {{ item.label }}</span>
-                  </div>
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+    <div
+      class="flex flex-col w-full items-center rounded rounded-md bg-advanced-filter -mt-16"
+      *ngIf="advancedFilter"
+    >
+      <div class="p-3 w-full h-16"></div>
+      <div class="grid sm:grid-cols-6 gap-6 p-3 w-full">
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'type' | transloco }}</mat-label>
+            <mat-select name="typeCompany" placeholder="select icon" [(ngModel)]="typeProduct">
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="typeProduct">
+                  <span class="hidden sm:block"> {{ typeProduct.label }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-option [value]="null" *ngIf="typeProduct">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of listTypeProducts" [value]="item">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.label }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'Company' | transloco }}</mat-label>
+            <mat-select name="typeCompany" placeholder="select icon" [(ngModel)]="companyProduct">
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="companyProduct">
+                  <span class="hidden sm:block"> {{ companyProduct.name }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-option [value]="null" *ngIf="companyProduct">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of listCompanies" [value]="item">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.name }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="w-full flex justify-end p-3">
+        <button [color]="'warn'" mat-flat-button (click)="getList()">
+          <mat-icon svgIcon="filter_list"></mat-icon>
+          <span class="capitalize ml-2">{{ 'filter' | transloco }}</span>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Main -->
-  <div class="flex flex-auto overflow-hidden">
+  <div class="flex flex-auto overflow-hidden rounded rounded-md m-3 border-2">
     <!-- projects list -->
     <div class="flex flex-col flex-auto sm:mb-18">
       <ng-container>
@@ -126,12 +124,12 @@
           <!-- Header -->
 
           <div
-            class="user-grid grid z-10 top-0 shadow items-center gap-4 py-4 px-4 md:px-6 text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
+            class="user-grid bg-advanced-filter grid z-10 top-0 shadow items-center gap-4 py-4 px-4 md:px-6 text-md font-semibold text-white dark:bg-black dark:bg-opacity-5"
           >
-            <div class="flex cursor-pointer">
+            <div class="flex">
               <span>{{ 'N°' | transloco }}</span>
             </div>
-            <div class="flex cursor-pointer">
+            <div class="flex">
               <span>{{ 'Type' | transloco }}</span>
             </div>
             <div class="hidden md:flex">
@@ -151,8 +149,15 @@
             <div class="flex-1 sm:grid sm:flex-0">
               <!-- Rows -->
               <ng-container>
-                <ng-container *ngFor="let product of displayedList?.data; let index = index">
-                  <div class="user-grid grid items-center gap-4 py-4 px-4 md:px-6 border-b">
+                <ng-container
+                  *ngFor="let product of displayedList?.data; let index = index; let odd = odd"
+                >
+                  <div
+                    class="user-grid grid items-center gap-4 py-4 px-4 md:px-6 border-b"
+                    [ngClass]="{
+                      'bg-gray-50': odd
+                    }"
+                  >
                     <div class="truncate">{{ index + 1 }}</div>
                     <div class="truncate">{{ product.typeProductId.label }}</div>
                     <div class="truncate">
@@ -202,7 +207,7 @@
           </div>
 
           <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            class="sm:absolute text-white bg-advanced-filter mx-3 mb-3 sm:inset-x-0 sm:bottom-0 border-b rounded-b-md sm:border-t sm:border-b-0 z-10 dark:bg-transparent"
             [showFirstLastButtons]="true"
             (page)="pageChanged($event)"
             showFirstLastButtons

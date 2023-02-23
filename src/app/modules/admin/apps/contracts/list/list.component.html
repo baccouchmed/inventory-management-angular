@@ -7,41 +7,225 @@
     <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
       <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
     </div>
-    <!-- Title -->
-    <div class="hidden sm:flex text-3xl font-extrabold">{{ 'Companies' | transloco }}</div>
-    <!-- Actions -->
-    <div class="flex flex-shrink-0 w-full items-center md:mt-4 sm:mt-0">
-      <div class="w-3/4 sm:w-2/3 flex flex-row">
-        <!-- Search -->
-        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-3/4">
-          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
-          <input
-            matInput
-            [(ngModel)]="searchFilter"
-            (ngModelChange)="updateSearch()"
-            [autocomplete]="'off'"
-            placeholder="{{ 'Search' | transloco }}"
-          />
-        </mat-form-field>
-        <!-- Refresh projects list -->
-        <div class="w-1/4">
-          <button class="ml-2 bg-gray-300" mat-flat-button (click)="getList()">
-            <mat-icon svgIcon="heroicons_outline:refresh"></mat-icon>
+    <div class="flex flex-row justify-between w-full items-center md:mt-4 sm:mt-0">
+      <!-- Title -->
+      <div
+        class="hidden sm:flex text-3xl p-3 font-extrabold"
+        [ngClass]="{
+          'text-blue-400 z-60': advancedFilter
+        }"
+      >
+        {{ 'Contracts' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 items-center p-3">
+        <div class="">
+          <!-- Search -->
+          <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-full">
+            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+            <input
+              matInput
+              [(ngModel)]="searchFilter"
+              (ngModelChange)="updateSearch()"
+              [autocomplete]="'off'"
+              placeholder="{{ 'Search' | transloco }}"
+            />
+          </mat-form-field>
+        </div>
+        <div class="ml-2 h-10">
+          <!-- Add project button -->
+          <button
+            [color]="advancedFilter ? null : 'accent'"
+            mat-raised-button
+            (click)="advancedFilter = !advancedFilter"
+            matTooltip="Advanced filter"
+          >
+            <mat-icon
+              class="icon-size-5"
+              [svgIcon]="'heroicons_outline:chevron-down'"
+              *ngIf="!advancedFilter"
+            ></mat-icon>
+            <mat-icon
+              class="icon-size-5"
+              [svgIcon]="'heroicons_outline:chevron-up'"
+              *ngIf="advancedFilter"
+            ></mat-icon>
           </button>
         </div>
       </div>
-      <div class="flex justify-end w-1/4 sm:w-1/3 sm:ml-0">
-        <!-- Add project button -->
-        <button class="" mat-flat-button [color]="'primary'" (click)="addCompany()">
-          <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-          <span class="mx-1.5 hidden sm:block">{{ 'Add' | transloco }}</span>
+    </div>
+    <div
+      class="flex flex-col w-full items-center rounded rounded-md bg-advanced-filter -mt-16"
+      *ngIf="advancedFilter"
+    >
+      <div class="p-3 w-full h-16"></div>
+      <div class="grid sm:grid-cols-6 gap-6 p-3 w-full">
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'country' | transloco }}</mat-label>
+            <mat-select
+              name="country"
+              placeholder="select icon"
+              [(ngModel)]="country"
+              (selectionChange)="refreshGovernorates()"
+            >
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="country">
+                  <span class="hidden sm:block"> {{ country.countryName }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-select-filter
+                [placeholder]="'Filter'"
+                [showSpinner]="true"
+                [displayMember]="'countryName'"
+                [array]="listCountries"
+                (filteredReturn)="filteredListCountries = $event"
+              ></mat-select-filter>
+              <mat-option [value]="null" *ngIf="country">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of filteredListCountries" [value]="item">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.countryName }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'governorate' | transloco }}</mat-label>
+            <mat-select
+              name="governorate"
+              placeholder="select icon"
+              [(ngModel)]="governorate"
+              [disabled]="!country"
+              (selectionChange)="refreshMunicipalities()"
+            >
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="governorate">
+                  <span class="hidden sm:block"> {{ governorate.governorateName }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-select-filter
+                [placeholder]="'Filter'"
+                [showSpinner]="true"
+                [displayMember]="'governorateName'"
+                [array]="listGovernorates"
+                (filteredReturn)="filteredListGovernorates = $event"
+              ></mat-select-filter>
+              <mat-option [value]="null" *ngIf="governorate">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of filteredListGovernorates" [value]="item">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.governorateName }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'municipality' | transloco }}</mat-label>
+            <mat-select
+              name="municipality"
+              placeholder="select icon"
+              [(ngModel)]="municipality"
+              [disabled]="!governorate"
+            >
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="municipality">
+                  <span class="hidden sm:block"> {{ municipality.municipalityName }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-select-filter
+                [placeholder]="'Filter'"
+                [showSpinner]="true"
+                [displayMember]="'municipalityName'"
+                [array]="listMunicipalities"
+                (filteredReturn)="filteredListMunicipalities = $event"
+              ></mat-select-filter>
+              <mat-option [value]="null" *ngIf="municipality">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of filteredListMunicipalities" [value]="item">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.municipalityName }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-6 gap-6 p-3 w-full">
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'type company' | transloco }}</mat-label>
+            <mat-select name="typeCompany" placeholder="select icon" [(ngModel)]="typeCompany">
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="typeCompany">
+                  <span class="hidden sm:block"> {{ typeCompany }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-option [value]="null" *ngIf="typeCompany">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of listTypeCompany" [value]="item.key">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.value }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'status contract' | transloco }}</mat-label>
+            <mat-select name="typeCompany" placeholder="select icon" [(ngModel)]="statusContract">
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="statusContract">
+                  <span class="hidden sm:block"> {{ statusContract }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-option [value]="null" *ngIf="statusContract">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of listStatusContract" [value]="item.key">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.value }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="w-full flex justify-end p-3">
+        <button [color]="'warn'" mat-flat-button (click)="getList()">
+          <mat-icon svgIcon="filter_list"></mat-icon>
+          <span class="capitalize ml-2">{{ 'filter' | transloco }}</span>
         </button>
       </div>
     </div>
   </div>
 
   <!-- Main -->
-  <div class="flex flex-auto overflow-hidden">
+  <div class="flex flex-auto overflow-hidden rounded rounded-md m-3 border-2">
     <!-- projects list -->
     <div class="flex flex-col flex-auto sm:mb-18">
       <ng-container>
@@ -49,22 +233,15 @@
           <!-- Header -->
 
           <div
-            class="company-grid grid z-10 top-0 shadow items-center gap-4 py-4 px-4 md:px-6 text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
-            matSort
-            matSortDisableClear
+            class="company-grid bg-advanced-filter grid z-10 top-0 shadow items-center gap-4 py-4 px-4 md:px-6 text-md font-semibold text-white dark:bg-black dark:bg-opacity-5"
           >
-            <div
-              class="flex cursor-pointer"
-              [mat-sort-header]="'type'"
-              (click)="updateSort('sortType')"
-            >
+            <div class="flex">
+              <span class="capitalize">{{ 'N°' | transloco }}</span>
+            </div>
+            <div class="flex">
               <span class="capitalize">{{ 'type' | transloco }}</span>
             </div>
-            <div
-              class="flex cursor-pointer"
-              [mat-sort-header]="'name'"
-              (click)="updateSort('sortName')"
-            >
+            <div class="flex">
               <span class="capitalize">{{ 'name' | transloco }}</span>
             </div>
             <div class="hidden md:flex">
@@ -76,66 +253,85 @@
             <div class="flex">
               <span class="capitalize">{{ 'phone' | transloco }}</span>
             </div>
-            <div class="hidden sm:flex"></div>
+            <div class="hidden sm:flex justify-center">
+              <span class="capitalize">{{ 'status' | transloco }}</span>
+            </div>
           </div>
           <div class="flex-1 overflow-hidden sm:overflow-y-auto">
             <div class="flex-1 sm:grid sm:flex-0">
               <!-- Rows -->
               <ng-container>
-                <ng-container *ngFor="let company of displayedList?.data">
+                <ng-container
+                  *ngFor="let company of displayedList?.data; let index = index; let odd = odd"
+                >
                   <div
                     class="company-grid grid items-center gap-4 py-4 px-4 md:px-6 border-b"
                     (click)="isScreenSmall ? openShow(company) : null"
+                    [ngClass]="{
+                      'bg-gray-50': odd
+                    }"
                   >
+                    <div class="truncate">{{ index + 1 }}</div>
                     <div class="truncate">{{ company.type }}</div>
                     <div class="truncate">{{ company.name }}</div>
                     <div class="hidden md:flex truncate">
-                      <span class="truncate" *ngIf="company.address">
-                        {{ company.address }}
-                      </span>
-                      <span class="truncate" *ngIf="company.postalCode">
-                        ({{ company.postalCode }})
+                      <span class="truncate">
+                        {{ company.address }}, {{ company.municipalityId?.municipalityName }},
+                        {{ company.governorateId?.governorateName }},
+                        {{ company.countryId?.countryName }}
                       </span>
                     </div>
                     <div class="truncate">
                       <span *ngIf="company.email">{{ company.email }}</span>
                     </div>
                     <div class="truncate">
-                      <span *ngIf="company.phone">{{ company.phone }}</span>
+                      <span>{{ company.phone }}</span>
                     </div>
-                    <div class="hidden sm:flex">
-                      <button class="mr-4" mat-icon-button [matMenuTriggerFor]="budgetMenu">
+                    <div class="hidden sm:flex justify-center">
+                      <button
+                        *ngIf="company.statusContract === StatusContract.validate"
+                        class="bg-green-400 text-white icon-size-6"
+                        mat-icon-button
+                        (click)="closeInvitation(company, index)"
+                      >
                         <mat-icon
-                          class="icon-size-5"
-                          [svgIcon]="'heroicons_solid:dots-vertical'"
+                          class="icon-size-5 text-white"
+                          svgIcon="heroicons_outline:check"
                         ></mat-icon>
                       </button>
-                      <mat-menu #budgetMenu="matMenu">
-                        <button
-                          mat-menu-item
-                          class="flex justify-between"
-                          (click)="openShow(company)"
-                        >
-                          <span class="ml-2 mr-1 hidden sm:block">{{ 'Show' | transloco }}</span>
-                          <mat-icon [svgIcon]="'heroicons_outline:eye'"></mat-icon>
-                        </button>
-                        <button
-                          mat-menu-item
-                          class="flex justify-between"
-                          (click)="openEdit(company)"
-                        >
-                          <span class="ml-2 mr-1 hidden sm:block">{{ 'Edit' | transloco }}</span>
-                          <mat-icon [svgIcon]="'heroicons_outline:pencil'"></mat-icon>
-                        </button>
-                        <button
-                          mat-menu-item
-                          class="flex justify-between"
-                          (click)="deleteCompany(company)"
-                        >
-                          <span class="ml-2 mr-1 hidden sm:block">{{ 'Delete' | transloco }}</span>
-                          <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
-                        </button>
-                      </mat-menu>
+                      <button
+                        *ngIf="company.statusContract === StatusContract.rejected"
+                        class="bg-red-400 text-white icon-size-6"
+                        mat-icon-button
+                        (click)="resendInvitation(company, index)"
+                      >
+                        <mat-icon
+                          class="icon-size-5 text-white"
+                          svgIcon="heroicons_outline:refresh"
+                        ></mat-icon>
+                      </button>
+                      <button
+                        *ngIf="!company.statusContract"
+                        class="bg-gray-400 text-white icon-size-6"
+                        mat-icon-button
+                        (click)="sendInvitation(company, index)"
+                      >
+                        <mat-icon
+                          class="icon-size-5 text-white"
+                          svgIcon="heroicons_outline:x"
+                        ></mat-icon>
+                      </button>
+                      <button
+                        *ngIf="company.statusContract === StatusContract.pending"
+                        class="bg-yellow-400 text-white icon-size-6"
+                        mat-icon-button
+                        (click)="pendingInvitation(company, index)"
+                      >
+                        <mat-icon
+                          class="icon-size-5 text-white"
+                          svgIcon="heroicons_outline:dots-horizontal"
+                        ></mat-icon>
+                      </button>
                     </div>
                   </div>
                 </ng-container>
@@ -144,7 +340,7 @@
           </div>
 
           <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            class="sm:absolute text-white bg-advanced-filter mx-3 mb-3 sm:inset-x-0 sm:bottom-0 border-b rounded-b-md sm:border-t sm:border-b-0 z-10 dark:bg-transparent"
             [showFirstLastButtons]="true"
             (page)="pageChanged($event)"
             showFirstLastButtons

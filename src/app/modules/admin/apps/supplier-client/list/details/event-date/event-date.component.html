@@ -1,0 +1,73 @@
+<div class="flex flex-col flex-auto -m-6 w-72 sm:w-120 xm:w-160">
+  <!-- Header -->
+  <div class="w-full flex items-center justify-between h-16 pl-6 bg-primary text-on-primary">
+    <div class="text-lg font-medium">{{ 'Create request from selected products' | transloco }}</div>
+    <button mat-icon-button (click)="dialogRef.close()" [tabIndex]="-1">
+      <mat-icon class="text-current" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+    </button>
+  </div>
+
+  <!-- Container -->
+  <div class="flex md:flex-row sm:flex-col max-h-screen-20 w-full p-5">
+    <!-- container -->
+    <div class="overflow-y-auto px-2 w-full">
+      <form #myForm="ngForm" ngForm="ngForm" class="p-3.5">
+        <div class="grid sm:grid-cols-4 gap-6 w-full mt-2">
+          <div class="sm:col-span-8">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label>{{ 'Due date' | transloco }}</mat-label>
+              <input
+                matInput
+                [matDatepicker]="startDatePicker"
+                name="begin-date"
+                [(ngModel)]="date"
+                required
+              />
+              <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #startDatePicker></mat-datepicker>
+              <mat-error
+                *ngIf="
+                  myForm.controls['begin-date'] &&
+                  (myForm.controls['begin-date'].dirty || myForm.submitted) &&
+                  myForm.controls['begin-date'].hasError('required')
+                "
+              >
+                {{ 'Due date is required' | transloco }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <!-- Email -->
+        </div>
+        <p>test</p>
+        <ng-container *ngIf="data && data.data" class="bg-gray-100">
+          <div
+            class="grid sm:grid-cols-6 gap-6 w-full mt-2"
+            *ngFor="let product of data.data; let index = index"
+          >
+            <div class="sm:col-span-1">{{ index + 1 }}</div>
+            <div class="sm:col-span-4">{{ product?.label }}</div>
+            <div class="sm:col-span-1">{{ product?.requestedStock }}</div>
+            <div></div>
+          </div>
+        </ng-container>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end mt-3">
+          <button class="ml-4" mat-flat-button [color]="'accent'" (click)="dialogRef.close()">
+            {{ 'Cancel' | transloco }}
+          </button>
+          <button
+            class="ml-4"
+            mat-flat-button
+            type="submit"
+            [disabled]="!date"
+            [color]="'primary'"
+            (click)="addEvent()"
+          >
+            {{ 'Create Request' | transloco }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

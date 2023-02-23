@@ -9,6 +9,8 @@ import { SnackBarService } from '../../../../../shared/services/snack-bar.servic
 import { FuseConfirmationService } from '../../../../../../@fuse/services/confirmation';
 import { Company } from '../../../../../shared/models/company';
 import { listTypeCompany } from '../../../../../shared/enums/types-company';
+import { Country, Governorate, Municipality } from '../../../../../shared/models/country';
+import { CountryService } from '../../../../../shared/services/country.service';
 
 @Component({
   selector: 'app-add-project',
@@ -25,7 +27,12 @@ export class AddComponent implements OnInit {
   imageSrc: string | ArrayBuffer;
   logoExist = false;
   readonly listTypeCompany = listTypeCompany;
-
+  listCountries: Country[];
+  filteredListCountries = [];
+  listGovernorates: Governorate[];
+  filteredListGovernorates = [];
+  listMunicipalities: Municipality[];
+  filteredListMunicipalities = [];
   constructor(
     private companyService: CompanyService,
     private _router: Router,
@@ -33,10 +40,12 @@ export class AddComponent implements OnInit {
     private _fuseConfirmationService: FuseConfirmationService,
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
+    private countryService: CountryService,
   ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.set('home/companies/add', 'Add');
+    this.getCountries();
   }
   createCompany(myForm: NgForm) {
     if (myForm.valid) {
@@ -125,6 +134,55 @@ export class AddComponent implements OnInit {
           this._router.navigate([`../`], { relativeTo: this.route });
         }
       });
+    }
+  }
+  getCountries() {
+    this.countryService.getAllCountries().subscribe(
+      (countries) => {
+        this.listCountries = countries;
+        this.filteredListCountries = this.listCountries;
+      },
+      () => {},
+    );
+  }
+
+  refreshListCountry(value: any) {
+    if (this.company.countryId !== null) {
+      this.company.countryId = value;
+      this.company.governorateId = null;
+      this.countryService.getGovernorates(value._id).subscribe(
+        (governorates) => {
+          this.listGovernorates = governorates;
+          this.filteredListGovernorates = this.listGovernorates;
+        },
+        () => {},
+      );
+    } else {
+      this.company.governorateId = null;
+      this.filteredListGovernorates = [];
+    }
+  }
+
+  refreshListGovernorate(value: any) {
+    if (this.company.governorateId !== null) {
+      this.company.governorateId = value;
+      this.company.municipalityId = null;
+      this.countryService.getMunicipalities(value._id).subscribe(
+        (municipalities) => {
+          this.listMunicipalities = municipalities;
+          this.filteredListMunicipalities = this.listMunicipalities;
+        },
+        () => {},
+      );
+    } else {
+      this.company.municipalityId = null;
+      this.filteredListMunicipalities = [];
+    }
+  }
+
+  refreshListMunicipality(value: any) {
+    if (this.company.municipalityId) {
+      this.company.municipalityId = value;
     }
   }
 }

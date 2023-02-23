@@ -53,6 +53,11 @@ export class ListComponent implements OnInit {
   today = moment().format();
   editPrice: boolean[];
   editMinStock: boolean[];
+  advancedFilter: boolean;
+  typeProduct: TypeProduct;
+  companyProduct: CompanyProduct;
+  inStock: number;
+  minStock: boolean = false;
 
   constructor(
     private companyProductService: CompanyProductService,
@@ -102,9 +107,17 @@ export class ListComponent implements OnInit {
   getList(): void {
     this.isLoading = true;
     this.companyProductService
-      .getProductStocks(this.currentSize, this.currentPage, this.searchFilter)
+      .getProductStocks(
+        this.currentSize,
+        this.currentPage,
+        this.searchFilter,
+        this.typeProduct ? this.typeProduct._id : null,
+        this.companyProduct ? this.companyProduct._id : null,
+        this.inStock || null,
+        this.minStock,
+      )
       .subscribe(
-        (res: Pagination<Product>) => {
+        (res: Pagination<ProductStock>) => {
           this.displayedList = res;
           this.editPrice = this.displayedList.data.map(() => false);
           this.editMinStock = this.displayedList.data.map(() => false);

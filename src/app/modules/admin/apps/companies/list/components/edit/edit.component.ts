@@ -8,6 +8,8 @@ import { Company } from '../../../../../../../shared/models/company';
 import { Site } from '../../../../../../../shared/models/site';
 import { environment } from '../../../../../../../../environments/environment';
 import { NgForm } from '@angular/forms';
+import { Country, Governorate, Municipality } from '../../../../../../../shared/models/country';
+import { CountryService } from '../../../../../../../shared/services/country.service';
 
 @Component({
   selector: 'app-edit',
@@ -26,6 +28,12 @@ export class EditComponent implements OnInit {
   imageSrc: string | ArrayBuffer;
   logoExist = false;
   loadingLogo: boolean;
+  listCountries: Country[];
+  filteredListCountries = [];
+  listGovernorates: Governorate[];
+  filteredListGovernorates = [];
+  listMunicipalities: Municipality[];
+  filteredListMunicipalities = [];
   constructor(
     private companyService: CompanyService,
     private _router: Router,
@@ -33,6 +41,7 @@ export class EditComponent implements OnInit {
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private _fuseConfirmationService: FuseConfirmationService,
+    private countryService: CountryService,
   ) {}
 
   ngOnInit(): void {
@@ -45,12 +54,52 @@ export class EditComponent implements OnInit {
             if (this.company.logo) {
               this.logoExist = true;
             }
+            this.getCountries();
             this.breadcrumbService.set('home/companies/:id', this.company.name);
           },
           () => {},
         );
       }
     });
+  }
+  getCountries() {
+    this.countryService.getAllCountries().subscribe(
+      (countries) => {
+        this.listCountries = countries;
+        this.filteredListCountries = this.listCountries;
+
+        if (this.company.countryId) {
+          this.company.countryId = this.listCountries.find(
+            (c) => c._id === this.company.countryId._id,
+          );
+          this.countryService.getGovernorates(this.company.countryId._id).subscribe(
+            (governorates) => {
+              this.listGovernorates = governorates;
+              this.filteredListGovernorates = this.listGovernorates;
+              if (this.company.governorateId) {
+                this.company.governorateId = this.listGovernorates.find(
+                  (c) => c._id === this.company.governorateId._id,
+                );
+              }
+              this.countryService.getMunicipalities(this.company.governorateId._id).subscribe(
+                (municipalities) => {
+                  this.listMunicipalities = municipalities;
+                  this.filteredListMunicipalities = this.listMunicipalities;
+                  if (this.company.municipalityId) {
+                    this.company.municipalityId = this.listMunicipalities.find(
+                      (c) => c._id === this.company.municipalityId._id,
+                    );
+                  }
+                },
+                () => {},
+              );
+            },
+            () => {},
+          );
+        }
+      },
+      () => {},
+    );
   }
 
   deleteCompany() {
@@ -106,11 +155,9 @@ export class EditComponent implements OnInit {
   }
   updateCompany(myForm: NgForm) {
     if (myForm.valid) {
-      this.companyService
-        .updateCompany(this.company)
-        .subscribe(() => {
-          this._router.navigate(['../'], { relativeTo: this.route });
-        });
+      this.companyService.updateCompany(this.company).subscribe(() => {
+        this._router.navigate(['../'], { relativeTo: this.route });
+      });
     }
   }
   trackByFn(index: number, item: any): any {
@@ -135,5 +182,47 @@ export class EditComponent implements OnInit {
         this.loadingLogo = false;
       },
     );
+  }
+  refreshListCountry(value: any) {
+    if (this.company.countryId !== null) {
+      this.company.countryId = value;
+      this.company.governorateId = null;
+      this.company.municipalityId = null;
+      this.countryService.getGovernorates(value._id).subscribe(
+        (governorates) => {
+          this.listGovernorates = governorates;
+          this.filteredListGovernorates = this.listGovernorates;
+        },
+        () => {},
+      );
+    } else {
+      this.company.governorateId = null;
+      this.filteredListGovernorates = [];
+      this.company.municipalityId = null;
+      this.filteredListMunicipalities = [];
+    }
+  }
+
+  refreshListGovernorate(value: any) {
+    if (this.company.governorateId !== null) {
+      this.company.governorateId = value;
+      this.company.municipalityId = null;
+      this.countryService.getMunicipalities(value._id).subscribe(
+        (municipalities) => {
+          this.listMunicipalities = municipalities;
+          this.filteredListMunicipalities = this.listMunicipalities;
+        },
+        () => {},
+      );
+    } else {
+      this.company.municipalityId = null;
+      this.filteredListMunicipalities = [];
+    }
+  }
+
+  refreshListMunicipality(value: any) {
+    if (this.company.municipalityId) {
+      this.company.municipalityId = value;
+    }
   }
 }

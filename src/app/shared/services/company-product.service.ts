@@ -50,23 +50,67 @@ export class CompanyProductService {
       params: searchParams,
     });
   }
-  getProducts(limit, page, search): Observable<Pagination<Product>> {
+  getProducts(
+    limit,
+    page,
+    search,
+    id,
+    type = null,
+    company = null,
+    inStock = null,
+    minStock = null,
+  ): Observable<Pagination<Product>> {
     let searchParams = new HttpParams();
     searchParams = searchParams.append('limit', limit);
     searchParams = searchParams.append('page', page);
     if (search) {
       searchParams = searchParams.append('search', search);
     }
+    if (id) {
+      searchParams = searchParams.append('id', id);
+    }
+    if (type) {
+      searchParams = searchParams.append('type', type);
+    }
+    if (company) {
+      searchParams = searchParams.append('company', company);
+    }
+    if (inStock) {
+      searchParams = searchParams.append('inStock', inStock);
+    }
+    if (minStock) {
+      searchParams = searchParams.append('minStock', minStock);
+    }
     return this.http.get<Pagination<Product>>(`${this.endpoint}/products`, {
       params: searchParams,
     });
   }
-  getProductStocks(limit, page, search): Observable<Pagination<ProductStock>> {
+  getProductStocks(
+    limit,
+    page,
+    search,
+    type = null,
+    company = null,
+    inStock = null,
+    minStock = false,
+  ): Observable<Pagination<ProductStock>> {
     let searchParams = new HttpParams();
     searchParams = searchParams.append('limit', limit);
     searchParams = searchParams.append('page', page);
     if (search) {
       searchParams = searchParams.append('search', search);
+    }
+    if (type) {
+      searchParams = searchParams.append('type', type);
+    }
+    if (company) {
+      searchParams = searchParams.append('company', company);
+    }
+    if (inStock) {
+      searchParams = searchParams.append('inStock', inStock);
+    }
+    if (minStock) {
+      searchParams = searchParams.append('minStock', minStock);
     }
     return this.http.get<Pagination<ProductStock>>(`${this.endpoint}/product-stocks`, {
       params: searchParams,

@@ -6,7 +6,7 @@ import { environment } from '../../../environments/environment';
 import { Pagination } from '../models/pagination';
 import { Company } from '../models/company';
 import { City } from '../models/city';
-import { Country } from '../models/country';
+import { Country, Governorate } from '../models/country';
 import { Site } from '../models/site';
 import { Currency } from '../models/currency';
 import { UserSite } from '../models/user-site';
@@ -48,7 +48,18 @@ export class CompanyService {
       params: searchParams,
     });
   }
-  getContracts(limit, page, sortCode, sortName, search): Observable<Pagination<Company>> {
+  getContracts(
+    limit,
+    page,
+    sortCode,
+    sortName,
+    search,
+    country,
+    governorate,
+    municipality,
+    typeCompany,
+    statusContract,
+  ): Observable<Pagination<Company>> {
     let searchParams = new HttpParams();
     searchParams = searchParams.append('limit', limit);
     searchParams = searchParams.append('page', page);
@@ -61,7 +72,61 @@ export class CompanyService {
     if (sortName) {
       searchParams = searchParams.append('sortName', sortName);
     }
+    if (country) {
+      searchParams = searchParams.append('country', country);
+    }
+    if (governorate) {
+      searchParams = searchParams.append('governorate', governorate);
+    }
+    if (municipality) {
+      searchParams = searchParams.append('municipality', municipality);
+    }
+    if (typeCompany) {
+      searchParams = searchParams.append('typeCompany', typeCompany);
+    }
+    if (statusContract) {
+      searchParams = searchParams.append('statusContract', statusContract);
+    }
     return this.http.get<Pagination<Company>>(`${this.endpoint}/contracts`, {
+      params: searchParams,
+    });
+  }
+  getValidateContracts(
+    limit,
+    page,
+    sortCode,
+    sortName,
+    search,
+    country,
+    governorate,
+    municipality,
+    typeCompany,
+  ): Observable<Pagination<Company>> {
+    let searchParams = new HttpParams();
+    searchParams = searchParams.append('limit', limit);
+    searchParams = searchParams.append('page', page);
+    if (search) {
+      searchParams = searchParams.append('search', search);
+    }
+    if (sortCode) {
+      searchParams = searchParams.append('sortCode', sortCode);
+    }
+    if (sortName) {
+      searchParams = searchParams.append('sortName', sortName);
+    }
+    if (country) {
+      searchParams = searchParams.append('country', country);
+    }
+    if (governorate) {
+      searchParams = searchParams.append('governorate', governorate);
+    }
+    if (municipality) {
+      searchParams = searchParams.append('municipality', municipality);
+    }
+    if (typeCompany) {
+      searchParams = searchParams.append('typeCompany', typeCompany);
+    }
+    return this.http.get<Pagination<Company>>(`${this.endpoint}/validate-contracts`, {
       params: searchParams,
     });
   }
@@ -83,8 +148,8 @@ export class CompanyService {
   getUserSites(): Observable<UserSite[]> {
     return this.http.get<UserSite[]>(`${this.endpoint}/user-sites`);
   }
-  getCities(id): Observable<City[]> {
-    return this.http.get<City[]>(`${this.endpoint}/city/${id}`);
+  getGovernorates(id): Observable<Governorate[]> {
+    return this.http.get<Governorate[]>(`${this.endpoint}/governorates/${id}`);
   }
 
   getCountries(): Observable<Country[]> {

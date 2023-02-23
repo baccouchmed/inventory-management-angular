@@ -7,14 +7,15 @@ import { FilterOptions } from '../../../../../shared/models/filter-options';
 import { Pagination } from '../../../../../shared/models/pagination';
 import { environment } from '../../../../../../environments/environment';
 import { UserState } from '../../../../../shared/enums/userState';
-import { SnackBarService } from '../../../../../shared/services/snack-bar.service';
 import { FeatureCodes } from '../../../../../shared/enums/feature-codes';
 import { FeatureActions } from '../../../../../shared/enums/feature-actions';
 import { CompanyProductService } from '../../../../../shared/services/company-product.service';
-import { CompanyProduct, Product, ProductStock, TypeProduct } from 'app/shared/models/inventory';
+import { CompanyProduct, ProductStock, TypeProduct } from 'app/shared/models/inventory';
 import { FilterProduct } from 'app/shared/models/filter-product';
 import { forkJoin } from 'rxjs';
 import { InventoryService } from '../../../../../shared/services/inventory.service';
+import { UserService } from '../../../../../shared/services/user.service';
+import { BadgeService } from '../../../../../shared/services/badge.service';
 
 @Component({
   selector: 'app-deduct',
@@ -48,7 +49,11 @@ export class DeductComponent implements OnInit {
   filteredListCompanies = [];
   listTypeProducts: TypeProduct[];
   filteredListTypeProducts = [];
-
+  advancedFilter: any;
+  typeProduct: TypeProduct;
+  companyProduct: CompanyProduct;
+  inStock: number;
+  minStock: boolean;
   constructor(
     private companyProductService: CompanyProductService,
     private _router: Router,
@@ -56,6 +61,8 @@ export class DeductComponent implements OnInit {
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _fuseConfirmationService: FuseConfirmationService,
     private inventoryService: InventoryService,
+    private userService: UserService,
+    private badgeService: BadgeService,
   ) {}
 
   ngOnInit(): void {
@@ -97,7 +104,15 @@ export class DeductComponent implements OnInit {
   getList(): void {
     this.isLoading = true;
     this.companyProductService
-      .getProductStocks(this.currentSize, this.currentPage, this.searchFilter)
+      .getProductStocks(
+        this.currentSize,
+        this.currentPage,
+        this.searchFilter,
+        this.typeProduct ? this.typeProduct._id : null,
+        this.companyProduct ? this.companyProduct._id : null,
+        this.inStock || null,
+        this.minStock || null,
+      )
       .subscribe(
         (res: Pagination<ProductStock>) => {
           this.displayedList = res;
@@ -158,7 +173,22 @@ export class DeductComponent implements OnInit {
   openFilter() {
     this.openFilters = !this.openFilters;
   }
-  deductStock(id, quantityIn) {
-    this.inventoryService.deductStock(id, quantityIn).subscribe();
+  deductStock(id, quantityOut, index) {
+    this.inventoryService.deductStock(id, quantityOut).subscribe(() => {
+      this.displayedList.data[index].quantity = null;
+      this.displayedList.data[index].inStock -= quantityOut;
+
+      this.badgeService.badgeStocks().subscribe(() => {
+        let navigation = this.userService._navigations.getValue();
+        navigation[
+          navigation.findIndex((val) => val.code === FeatureCodes.setting.toString())
+        ].children[
+          navigation[
+            navigation.findIndex((val) => val.code === FeatureCodes.setting.toString())
+          ].children.findIndex((val) => val.code === FeatureCodes.stocks.toString())
+        ].badge.title = this.badgeService._badgeStock.getValue();
+        this.userService._navigations.next(navigation);
+      });
+    });
   }
 }
