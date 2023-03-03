@@ -52,6 +52,17 @@
             ></mat-icon>
           </button>
         </div>
+        <div class="ml-2">
+          <button
+            class=""
+            mat-raised-button
+            [color]="'primary'"
+            matTooltip="Add to stock"
+            [routerLink]="'/home/supplierclient'"
+          >
+            <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+          </button>
+        </div>
       </div>
     </div>
     <div
@@ -242,6 +253,7 @@
             <div class="flex">{{ 'Due date' | transloco }}</div>
             <div class="flex">{{ 'Company' | transloco }}</div>
             <div class="flex">{{ 'Invoice' | transloco }}</div>
+            <div class="flex">{{ 'Done' | transloco }}</div>
             <div class="flex"></div>
           </div>
           <div class="flex-1 overflow-hidden sm:overflow-y-auto">
@@ -267,7 +279,9 @@
                         [ngClass]="{
                           'bg-green-400':
                             productRequest.requestedValidation &&
-                            productRequest.requesterValidation,
+                            productRequest.requesterValidation &&
+                            !productRequest.done,
+                          'bg-blue-400': productRequest.done,
                           'bg-red-400':
                             !productRequest.requestedValidation &&
                             !productRequest.requesterValidation,
@@ -298,6 +312,21 @@
                           class="icon-size-5"
                           [svgIcon]="'heroicons_outline:save'"
                         ></mat-icon>
+                      </button>
+                    </div>
+                    <div>
+                      <button
+                        class="mr-1"
+                        type="button"
+                        mat-icon-button
+                        (click)="doneRequest(productRequest._id, index)"
+                        [disabled]="
+                          !productRequest.requestedValidation ||
+                          !productRequest.requesterValidation ||
+                          productRequest.done
+                        "
+                      >
+                        <mat-icon svgIcon="send"></mat-icon>
                       </button>
                     </div>
                     <div>
@@ -340,7 +369,13 @@
                         </div>
                         <div class="flex"></div>
                         <div>
-                          <span class="capitalize">{{ 'requested' | transloco }}</span>
+                          <span class="capitalize">{{ 'Qts requested' | transloco }}</span>
+                        </div>
+                        <div>
+                          <span class="capitalize">{{ 'unit price' | transloco }}</span>
+                        </div>
+                        <div>
+                          <span class="capitalize">{{ 'Qts validated' | transloco }}</span>
                         </div>
                         <div>
                           <button
@@ -352,7 +387,7 @@
                               productRequest.requesterValidation
                             "
                           >
-                            <span class="capitalize">{{ 'validated' | transloco }}</span>
+                            <span class="capitalize">{{ 'confirm' | transloco }}</span>
                           </button>
                         </div>
                       </div>
@@ -427,6 +462,19 @@
                           </mat-form-field>
                         </div>
 
+                        <div class="">
+                          <mat-form-field
+                            class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full"
+                          >
+                            <input
+                              [(ngModel)]="product.unitPriceRequested"
+                              matInput
+                              name="unitPriceRequested{{ index }}"
+                              type="number"
+                              disabled
+                            />
+                          </mat-form-field>
+                        </div>
                         <div class="">
                           <mat-form-field
                             class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full"

@@ -74,6 +74,7 @@ export class ListComponent implements OnInit {
   readonly StatusRequest = StatusRequest;
   myCompany: Company;
   statusRequest: string;
+  document: any;
 
   constructor(
     private companyProductService: CompanyProductService,
@@ -220,13 +221,10 @@ export class ListComponent implements OnInit {
             navigation.findIndex((val) => val.code === FeatureCodes.crm.toString())
           ].children.findIndex((val) => val.code === FeatureCodes.myRequests.toString())
         ].badge.title = this.badgeService._badgeMyRequest.getValue();
-        console.log(navigation);
         this.userService._navigations.next(navigation);
       });
     });
   }
-
-  downloadInvoice(_id: string) {}
   refreshGovernorates() {
     this.governorate = null;
     this.municipality = null;
@@ -243,5 +241,30 @@ export class ListComponent implements OnInit {
       this.listMunicipalities = municipalities;
       this.filteredListMunicipalities = this.listMunicipalities;
     });
+  }
+
+  doneRequest(requestId: string, index: number) {
+    this.productRequestService.requestedToDone(requestId).subscribe(() => {
+      this.displayedList.data[index].done = true;
+      this.badgeService.badgeMyRequests().subscribe(() => {
+        let navigation = this.userService._navigations.getValue();
+        navigation[
+          navigation.findIndex((val) => val.code === FeatureCodes.crm.toString())
+        ].children[
+          navigation[
+            navigation.findIndex((val) => val.code === FeatureCodes.crm.toString())
+          ].children.findIndex((val) => val.code === FeatureCodes.myRequests.toString())
+        ].badge.title = this.badgeService._badgeMyRequest.getValue();
+        this.userService._navigations.next(navigation);
+      });
+    });
+  }
+
+  downloadInvoice(id: string) {
+    this.document = this.productRequestService.downloadInvoice(
+      localStorage.getItem('accessToken'),
+      id,
+    );
+    window.open(this.document, '_blank');
   }
 }

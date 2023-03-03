@@ -28,6 +28,11 @@ export class ProductRequestService {
       quantityValidated,
     });
   }
+  updateUnitPriceRequested(requestId, id, unitPriceRequested): Observable<null> {
+    return this.http.patch<null>(`${this.endpoint}/${requestId}/unit-price-requested/${id}`, {
+      unitPriceRequested,
+    });
+  }
   requestedValidate(requestId, productsId): Observable<null> {
     return this.http.patch<null>(`${this.endpoint}/${requestId}/requested-validate`, {
       productsId,
@@ -35,6 +40,9 @@ export class ProductRequestService {
   }
   requesterValidate(requestId): Observable<null> {
     return this.http.get<null>(`${this.endpoint}/${requestId}/requester-validate`);
+  }
+  requestedToDone(requestId): Observable<null> {
+    return this.http.get<null>(`${this.endpoint}/${requestId}/requested-done`);
   }
   getMyRequests(limit, page, search, typeRequest): Observable<Pagination<ProductRequest>> {
     let searchParams = new HttpParams();
@@ -49,5 +57,8 @@ export class ProductRequestService {
     return this.http.get<Pagination<ProductRequest>>(`${this.endpoint}`, {
       params: searchParams,
     });
+  }
+  downloadInvoice(token: string, id: string): string {
+    return `${this.endpoint}/download-invoice?accessToken=${token}&id=${id}`;
   }
 }

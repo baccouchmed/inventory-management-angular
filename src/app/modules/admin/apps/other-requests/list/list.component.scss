@@ -1,30 +1,30 @@
 .user-grid {
-  grid-template-columns: 10px 50px 50px auto 10px;
+  grid-template-columns: 40px 50px 50px auto 20px 10px;
 
   @screen sm {
-    grid-template-columns: 20px 120px 120px auto 40px;
+    grid-template-columns: 40px 120px 120px auto 80px 40px;
   }
 
   @screen md {
-    grid-template-columns: 30px 140px 140px auto 40px;
+    grid-template-columns: 40px 140px 140px auto 90px 40px;
   }
 
   @screen lg {
-    grid-template-columns: 40px 170px 170px auto 40px;
+    grid-template-columns: 40px 170px 170px auto 100px 40px;
   }
 }
 .pricescontract-grid {
-  grid-template-columns: 10px 50px auto 10px;
+  grid-template-columns: 10px 50px auto 10px 10px 10px 10px;
 
   @screen sm {
-    grid-template-columns: 20px 50px auto 150px 150px;
+    grid-template-columns: 20px 50px auto 80px 100px 100px 80px;
   }
 
   @screen md {
-    grid-template-columns: 30px 70px auto 200px 200px;
+    grid-template-columns: 30px 70px auto 100px 150px 150px 80px;
   }
 
   @screen lg {
-    grid-template-columns: 40px 90px auto 250px 250px;
+    grid-template-columns: 40px 90px auto 150px 200px 200px 80px;
   }
 }

@@ -17,6 +17,12 @@ import * as moment from 'moment';
 import { ProductRequestService } from '../../../../../shared/services/product-request.service';
 import { BadgeService } from '../../../../../shared/services/badge.service';
 import { UserService } from '../../../../../shared/services/user.service';
+import { SnackBarService } from '../../../../../shared/services/snack-bar.service';
+import { Country, Governorate, Municipality } from '../../../../../shared/models/country';
+import { Company } from '../../../../../shared/models/company';
+import { listTypeCompany } from '../../../../../shared/enums/types-company';
+import { listStatusRequest, StatusRequest } from '../../../../../shared/enums/status-request';
+import { CountryService } from '../../../../../shared/services/country.service';
 
 @Component({
   selector: 'app-list',
@@ -53,6 +59,24 @@ export class ListComponent implements OnInit {
   today = moment().format();
   editQuantityRequested: boolean[];
   selectedProductRequest: ProductRequest;
+  editUnitPriceRequested: boolean[];
+  advancedFilter: boolean = false;
+  country: Country;
+  governorate: Governorate;
+  municipality: Municipality;
+  listCountries: Country[];
+  filteredListCountries = [];
+  listGovernorates: Governorate[];
+  filteredListGovernorates = [];
+  listMunicipalities: Municipality[];
+  filteredListMunicipalities = [];
+  typeCompany: string;
+  listTypeCompany = listTypeCompany;
+  listStatusRequest = listStatusRequest;
+  readonly StatusRequest = StatusRequest;
+  myCompany: Company;
+  statusRequest: string;
+  document: any;
 
   constructor(
     private companyProductService: CompanyProductService,
@@ -63,6 +87,8 @@ export class ListComponent implements OnInit {
     private _fuseConfirmationService: FuseConfirmationService,
     private badgeService: BadgeService,
     private userService: UserService,
+    private snackBarService: SnackBarService,
+    private countryService: CountryService,
   ) {}
 
   ngOnInit(): void {
@@ -116,6 +142,7 @@ export class ListComponent implements OnInit {
             })),
           }));
           this.editQuantityRequested = this.displayedList.data.map(() => false);
+          this.editUnitPriceRequested = this.displayedList.data.map(() => false);
           this.isLoading = false;
         },
         () => {
@@ -192,21 +219,57 @@ export class ListComponent implements OnInit {
       .updateQuantityValidated(requestId, id, quantityRequested)
       .subscribe();
   }
-
+  updateUnitPriceRequested(requestId: string, id: string, unitPriceRequested: number) {
+    this.productRequestService
+      .updateUnitPriceRequested(requestId, id, unitPriceRequested)
+      .subscribe();
+  }
   validateRequest(requestId: string, productsId: Product[], index) {
-    this.productRequestService.requestedValidate(requestId, productsId).subscribe(() => {
-      this.displayedList.data[index].requestedValidation = true;
-      this.badgeService.badgeStockRequests().subscribe(() => {
-        let navigation = this.userService._navigations.getValue();
-        navigation[
-          navigation.findIndex((val) => val.code === FeatureCodes.crm.toString())
-        ].children[
+    const notValide = this.displayedList.data[index].productsId.filter(
+      (val) => !val.unitPriceRequested,
+    );
+    if (notValide.length) {
+      this.snackBarService.openSnackBar('unit price is required', 'error');
+    } else {
+      this.productRequestService.requestedValidate(requestId, productsId).subscribe(() => {
+        this.displayedList.data[index].requestedValidation = true;
+        this.badgeService.badgeStockRequests().subscribe(() => {
+          let navigation = this.userService._navigations.getValue();
           navigation[
             navigation.findIndex((val) => val.code === FeatureCodes.crm.toString())
-          ].children.findIndex((val) => val.code === FeatureCodes.otherRequests.toString())
-        ].badge.title = this.badgeService._badgeStockRequest.getValue();
-        this.userService._navigations.next(navigation);
+          ].children[
+            navigation[
+              navigation.findIndex((val) => val.code === FeatureCodes.crm.toString())
+            ].children.findIndex((val) => val.code === FeatureCodes.otherRequests.toString())
+          ].badge.title = this.badgeService._badgeStockRequest.getValue();
+          this.userService._navigations.next(navigation);
+        });
       });
+    }
+  }
+
+  refreshGovernorates() {
+    this.governorate = null;
+    this.municipality = null;
+    this.listMunicipalities = [];
+    this.filteredListMunicipalities = [];
+    this.countryService.getGovernorates(this.country._id).subscribe((governorates) => {
+      this.listGovernorates = governorates;
+      this.filteredListGovernorates = this.listGovernorates;
     });
+  }
+  refreshMunicipalities() {
+    this.municipality = null;
+    this.countryService.getMunicipalities(this.governorate._id).subscribe((municipalities) => {
+      this.listMunicipalities = municipalities;
+      this.filteredListMunicipalities = this.listMunicipalities;
+    });
+  }
+  downloadInvoice(id: string) {
+    this.document = this.productRequestService.downloadInvoice(
+      localStorage.getItem('accessToken'),
+      id,
+    );
+    window.open(this.document, '_blank');
   }
 }

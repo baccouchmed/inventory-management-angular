@@ -1,4 +1,5 @@
 import { Company } from './company';
+import * as buffer from 'buffer';
 
 export class Category {
   id?: string;
@@ -99,9 +100,11 @@ export class ProductRequest {
     productId?: Product;
     quantityRequested?: number;
     quantityValidated?: number;
+    unitPriceRequested?: number;
   }[];
   requesterValidation?: boolean;
   requestedValidation?: boolean;
+  done?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

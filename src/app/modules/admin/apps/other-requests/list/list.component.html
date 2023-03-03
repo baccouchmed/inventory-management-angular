@@ -7,122 +7,225 @@
     <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
       <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
     </div>
-    <!-- Title -->
-    <div class="hidden sm:flex text-3xl font-extrabold">{{ 'Stock requests' | transloco }}</div>
-    <!-- Actions -->
-    <div class="flex flex-shrink-0 w-full items-center md:mt-4 sm:mt-0">
-      <div class="w-3/4 sm:w-2/3 flex flex-row">
-        <!-- Search -->
-        <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-3/4">
-          <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
-          <input
-            matInput
-            [(ngModel)]="searchFilter"
-            (ngModelChange)="updateSearch()"
-            [autocomplete]="'off'"
-            placeholder="{{ 'Search' | transloco }}"
-          />
-        </mat-form-field>
-        <!-- Refresh projects list -->
-        <div class="w-1/4">
-          <button class="ml-2 bg-gray-300" mat-flat-button (click)="getList()">
-            <mat-icon svgIcon="heroicons_outline:refresh"></mat-icon>
+    <div class="flex flex-row justify-between w-full items-center md:mt-4 sm:mt-0">
+      <!-- Title -->
+      <div
+        class="hidden sm:flex text-3xl p-3 font-extrabold"
+        [ngClass]="{
+          'text-blue-400 z-60': advancedFilter
+        }"
+      >
+        {{ 'Stock requests' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 items-center p-3">
+        <div class="">
+          <!-- Search -->
+          <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded w-full">
+            <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+            <input
+              matInput
+              [(ngModel)]="searchFilter"
+              (ngModelChange)="updateSearch()"
+              [autocomplete]="'off'"
+              placeholder="{{ 'Search' | transloco }}"
+            />
+          </mat-form-field>
+        </div>
+        <div class="ml-2 h-10">
+          <!-- Add project button -->
+          <button
+            [color]="advancedFilter ? null : 'accent'"
+            mat-raised-button
+            (click)="advancedFilter = !advancedFilter"
+            matTooltip="Advanced filter"
+          >
+            <mat-icon
+              class="icon-size-5"
+              [svgIcon]="'heroicons_outline:chevron-down'"
+              *ngIf="!advancedFilter"
+            ></mat-icon>
+            <mat-icon
+              class="icon-size-5"
+              [svgIcon]="'heroicons_outline:chevron-up'"
+              *ngIf="advancedFilter"
+            ></mat-icon>
           </button>
         </div>
       </div>
-      <div class="flex justify-end w-1/4 sm:w-1/3 sm:ml-0">
-        <button class="ml-2 bg-gray-300" mat-flat-button (click)="openFilter()">
-          <mat-icon svgIcon="heroicons_outline:filter"></mat-icon>
-        </button>
-        <button class="" mat-flat-button [color]="'primary'" (click)="addStock()">
-          <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
-          <span class="mx-1.5 hidden sm:block">{{ 'Add' | transloco }}</span>
-        </button>
-      </div>
     </div>
-    <div class="flex flex-shrink-0 w-full items-center md:mt-4 sm:mt-0">
-      <div class="flex flex-col mb-6 w-full" *ngIf="openFilters">
-        <div class="grid sm:grid-cols-6 gap-6 p-3">
-          <!-- site -->
-          <div class="sm:col-span-3">
-            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'Company' | transloco }}</mat-label>
-              <mat-select
-                placeholder="select site"
-                [(ngModel)]="filterProduct.companyProduct"
-                [disabled]="isLoading"
-                name="siteId"
-              >
-                <mat-select-trigger>
-                  <div class="font-medium items-center flex flex-row">
-                    <span class="">
-                      {{ filterProduct?.companyProduct?.name }}
-                    </span>
-                  </div>
-                </mat-select-trigger>
-                <mat-select-filter
-                  [placeholder]="'Filter'"
-                  [displayMember]="'name'"
-                  [showSpinner]="false"
-                  [array]="listCompanies"
-                  (filteredReturn)="filteredListCompanies = $event"
-                ></mat-select-filter>
-                <mat-option [value]="null">
-                  <div class="font-medium items-center flex flex-row">
-                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
-                  </div>
-                </mat-option>
-                <mat-option *ngFor="let item of filteredListCompanies" [value]="item">
-                  <div class="font-medium items-center flex flex-row">
-                    <span class=""> {{ item.name }}</span>
-                  </div>
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-          <div class="sm:col-span-3">
-            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
-              <mat-label class="capitalize">{{ 'Type product' | transloco }}</mat-label>
-              <mat-select
-                placeholder="select site"
-                [(ngModel)]="filterProduct.typeProduct"
-                [disabled]="isLoading"
-                name="siteId"
-              >
-                <mat-select-trigger>
-                  <div class="font-medium items-center flex flex-row">
-                    <span class="">
-                      {{ filterProduct?.typeProduct?.label }}
-                    </span>
-                  </div>
-                </mat-select-trigger>
-                <mat-select-filter
-                  [placeholder]="'Filter'"
-                  [displayMember]="'label'"
-                  [showSpinner]="false"
-                  [array]="listTypeProducts"
-                  (filteredReturn)="filteredListTypeProducts = $event"
-                ></mat-select-filter>
-                <mat-option [value]="null">
-                  <div class="font-medium items-center flex flex-row">
-                    <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
-                  </div>
-                </mat-option>
-                <mat-option *ngFor="let item of filteredListTypeProducts" [value]="item">
-                  <div class="font-medium items-center flex flex-row">
-                    <span class=""> {{ item.label }}</span>
-                  </div>
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
+    <div
+      class="flex flex-col w-full items-center rounded rounded-md bg-advanced-filter -mt-16"
+      *ngIf="advancedFilter"
+    >
+      <div class="p-3 w-full h-16"></div>
+      <div class="grid sm:grid-cols-6 gap-6 p-3 w-full">
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'country' | transloco }}</mat-label>
+            <mat-select
+              name="country"
+              placeholder="select icon"
+              [(ngModel)]="country"
+              (selectionChange)="refreshGovernorates()"
+            >
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="country">
+                  <span class="hidden sm:block"> {{ country.countryName }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-select-filter
+                [placeholder]="'Filter'"
+                [showSpinner]="true"
+                [displayMember]="'countryName'"
+                [array]="listCountries"
+                (filteredReturn)="filteredListCountries = $event"
+              ></mat-select-filter>
+              <mat-option [value]="null" *ngIf="country">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of filteredListCountries" [value]="item">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.countryName }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'governorate' | transloco }}</mat-label>
+            <mat-select
+              name="governorate"
+              placeholder="select icon"
+              [(ngModel)]="governorate"
+              [disabled]="!country"
+              (selectionChange)="refreshMunicipalities()"
+            >
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="governorate">
+                  <span class="hidden sm:block"> {{ governorate.governorateName }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-select-filter
+                [placeholder]="'Filter'"
+                [showSpinner]="true"
+                [displayMember]="'governorateName'"
+                [array]="listGovernorates"
+                (filteredReturn)="filteredListGovernorates = $event"
+              ></mat-select-filter>
+              <mat-option [value]="null" *ngIf="governorate">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of filteredListGovernorates" [value]="item">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.governorateName }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'municipality' | transloco }}</mat-label>
+            <mat-select
+              name="municipality"
+              placeholder="select icon"
+              [(ngModel)]="municipality"
+              [disabled]="!governorate"
+            >
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="municipality">
+                  <span class="hidden sm:block"> {{ municipality.municipalityName }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-select-filter
+                [placeholder]="'Filter'"
+                [showSpinner]="true"
+                [displayMember]="'municipalityName'"
+                [array]="listMunicipalities"
+                (filteredReturn)="filteredListMunicipalities = $event"
+              ></mat-select-filter>
+              <mat-option [value]="null" *ngIf="municipality">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of filteredListMunicipalities" [value]="item">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.municipalityName }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-6 gap-6 p-3 w-full">
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'type company' | transloco }}</mat-label>
+            <mat-select name="typeCompany" placeholder="select icon" [(ngModel)]="typeCompany">
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="typeCompany">
+                  <span class="hidden sm:block"> {{ typeCompany }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-option [value]="null" *ngIf="typeCompany">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of listTypeCompany" [value]="item.key">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.value }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="sm:col-span-2">
+          <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+            <mat-label class="capitalize text-white">{{ 'status request' | transloco }}</mat-label>
+            <mat-select name="typeCompany" placeholder="select icon" [(ngModel)]="statusRequest">
+              <mat-select-trigger>
+                <div class="font-medium items-center flex flex-row" *ngIf="statusRequest">
+                  <span class="hidden sm:block"> {{ statusRequest }} </span>
+                </div>
+              </mat-select-trigger>
+
+              <mat-option [value]="null" *ngIf="statusRequest">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ '-- None --' | transloco }} </span>
+                </div>
+              </mat-option>
+              <mat-option *ngFor="let item of listStatusRequest" [value]="item.key">
+                <div class="font-medium items-center flex flex-row">
+                  <span class="hidden sm:block"> {{ item.value }} </span>
+                </div>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="w-full flex justify-end p-3">
+        <button [color]="'warn'" mat-flat-button (click)="getList()">
+          <mat-icon svgIcon="filter_list"></mat-icon>
+          <span class="capitalize ml-2">{{ 'filter' | transloco }}</span>
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Main -->
-  <div class="flex flex-auto overflow-hidden">
+  <div class="flex flex-auto overflow-hidden rounded rounded-md m-3 border-2">
     <!-- projects list -->
     <div class="flex flex-col flex-auto sm:mb-18">
       <ng-container>
@@ -130,7 +233,7 @@
           <!-- Header -->
 
           <div
-            class="user-grid grid z-10 top-0 shadow items-center gap-4 py-4 px-4 md:px-6 text-md font-semibold text-secondary bg-gray-50 dark:bg-black dark:bg-opacity-5"
+            class="user-grid bg-advanced-filter grid z-10 top-0 shadow items-center gap-4 py-4 px-4 md:px-6 text-md font-semibold text-white dark:bg-black dark:bg-opacity-5"
           >
             <div class="flex cursor-pointer">
               <span>{{ 'N°' | transloco }}</span>
@@ -138,25 +241,47 @@
             <div class="flex">{{ 'Date creation' | transloco }}</div>
             <div class="flex">{{ 'Due date' | transloco }}</div>
             <div class="flex">{{ 'Company' | transloco }}</div>
+            <div class="flex">{{ 'Invoice' | transloco }}</div>
+
             <div class="flex"></div>
           </div>
           <div class="flex-1 overflow-hidden sm:overflow-y-auto">
             <div class="flex-1 sm:grid sm:flex-0">
               <!-- Rows -->
               <ng-container>
-                <ng-container *ngFor="let productRequest of displayedList?.data; let index = index">
+                <ng-container
+                  *ngFor="
+                    let productRequest of displayedList?.data;
+                    let index = index;
+                    let odd = odd
+                  "
+                >
                   <div
                     class="user-grid grid items-center gap-4 py-4 px-4 md:px-6 border-b"
                     [ngClass]="{
-                      'bg-green-100':
-                        productRequest.requestedValidation && productRequest.requesterValidation,
-                      'bg-red-100':
-                        !productRequest.requestedValidation && !productRequest.requesterValidation,
-                      'bg-yellow-100':
-                        productRequest.requestedValidation && !productRequest.requesterValidation
+                      'bg-gray-50': odd
                     }"
                   >
-                    <div class="truncate">{{ index + 1 }}</div>
+                    <div class="truncate">
+                      <div
+                        class="w-6 h-6 rounded-full flex justify-center items-center"
+                        [ngClass]="{
+                          'bg-green-400':
+                            productRequest.requestedValidation &&
+                            productRequest.requesterValidation &&
+                            !productRequest.done,
+                          'bg-blue-400': productRequest.done,
+                          'bg-red-400':
+                            !productRequest.requestedValidation &&
+                            !productRequest.requesterValidation,
+                          'bg-yellow-400':
+                            productRequest.requestedValidation &&
+                            !productRequest.requesterValidation
+                        }"
+                      >
+                        {{ index + 1 }}
+                      </div>
+                    </div>
                     <div class="truncate">
                       {{ productRequest?.updatedAt | date: 'dd / MM / yyyy' }}
                     </div>
@@ -164,6 +289,21 @@
                       {{ productRequest?.dueDate | date: 'dd / MM / yyyy' }}
                     </div>
                     <div class="truncate">{{ productRequest?.requesterId?.name }}</div>
+                    <div>
+                      <button
+                        class="mr-1"
+                        type="button"
+                        mat-icon-button
+                        (click)="downloadInvoice(productRequest._id)"
+                        [disabled]="!productRequest.requesterValidation"
+                      >
+                        <mat-icon
+                          class="icon-size-5"
+                          [svgIcon]="'heroicons_outline:save'"
+                        ></mat-icon>
+                      </button>
+                    </div>
+
                     <div>
                       <button
                         class="mr-1"
@@ -204,7 +344,13 @@
                         </div>
                         <div class="flex"></div>
                         <div>
-                          <span class="capitalize">{{ 'requested' | transloco }}</span>
+                          <span class="capitalize">{{ 'Qts requested' | transloco }}</span>
+                        </div>
+                        <div>
+                          <span class="capitalize">{{ 'unit price' | transloco }}</span>
+                        </div>
+                        <div>
+                          <span class="capitalize">{{ 'Qts validated' | transloco }}</span>
                         </div>
                         <div>
                           <button
@@ -215,7 +361,7 @@
                             "
                             [disabled]="productRequest.requestedValidation"
                           >
-                            <span class="capitalize">{{ 'validated' | transloco }}</span>
+                            <span class="capitalize">{{ 'confirm' | transloco }}</span>
                           </button>
                         </div>
                       </div>
@@ -229,7 +375,7 @@
                           let last = last
                         "
                       >
-                        <div class="truncate">{{ index + 1 }}</div>
+                        <div class="truncate">{{ index1 + 1 }}</div>
                         <div class="truncate">
                           <div
                             class="relative flex flex-0 items-center justify-center w-20 h-20 mr-6 rounded overflow-hidden border"
@@ -258,7 +404,7 @@
                             <input
                               [(ngModel)]="product.quantityRequested"
                               matInput
-                              name="quantityRequested{{ index }}"
+                              name="quantityRequested{{ index }}{{ index1 }}"
                               type="number"
                               disabled
                             />
@@ -272,19 +418,59 @@
                               <mat-icon
                                 class="icon-size-5"
                                 [svgIcon]="'heroicons_outline:pencil'"
-                                *ngIf="!editQuantityRequested[index]"
+                                *ngIf="!editUnitPriceRequested[index1]"
                                 (click)="
                                   productRequest.requestedValidation
                                     ? null
-                                    : (editQuantityRequested[index] = !editQuantityRequested[index])
+                                    : (editUnitPriceRequested[index1] =
+                                        !editUnitPriceRequested[index1])
                                 "
                               ></mat-icon>
                               <mat-icon
                                 class="icon-size-5"
                                 [svgIcon]="'heroicons_outline:save'"
-                                *ngIf="editQuantityRequested[index]"
+                                *ngIf="editUnitPriceRequested[index1]"
                                 (click)="
-                                  editQuantityRequested[index] = !editQuantityRequested[index];
+                                  editUnitPriceRequested[index1] = !editUnitPriceRequested[index1];
+                                  updateUnitPriceRequested(
+                                    productRequest._id,
+                                    product._id,
+                                    product.unitPriceRequested
+                                  )
+                                "
+                              ></mat-icon>
+                            </span>
+                            <input
+                              [(ngModel)]="product.unitPriceRequested"
+                              matInput
+                              name="unitPriceRequested{{ index }}{{ index1 }}"
+                              type="number"
+                              [disabled]="!editUnitPriceRequested[index1]"
+                            />
+                          </mat-form-field>
+                        </div>
+                        <div class="">
+                          <mat-form-field
+                            class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full"
+                          >
+                            <span matPrefix>
+                              <mat-icon
+                                class="icon-size-5"
+                                [svgIcon]="'heroicons_outline:pencil'"
+                                *ngIf="!editQuantityRequested[index1]"
+                                (click)="
+                                  productRequest.requestedValidation
+                                    ? null
+                                    : (editQuantityRequested[index1] =
+                                        !editQuantityRequested[index1])
+                                "
+                              ></mat-icon>
+                              <mat-icon
+                                class="icon-size-5"
+                                [svgIcon]="'heroicons_outline:save'"
+                                *ngIf="editQuantityRequested[index1]"
+                                (click)="
+                                  editQuantityRequested[index1] = !editQuantityRequested[index1];
                                   updateQuantityValidated(
                                     productRequest._id,
                                     product._id,
@@ -296,9 +482,9 @@
                             <input
                               [(ngModel)]="product.quantityValidated"
                               matInput
-                              name="quantityValidated{{ index }}"
+                              name="quantityValidated{{ index1 }}"
                               type="number"
-                              [disabled]="!editQuantityRequested[index]"
+                              [disabled]="!editQuantityRequested[index1]"
                             />
                           </mat-form-field>
                         </div>
@@ -311,7 +497,7 @@
           </div>
 
           <mat-paginator
-            class="sm:absolute sm:inset-x-0 sm:bottom-0 border-b sm:border-t sm:border-b-0 z-10 bg-gray-50 dark:bg-transparent"
+            class="sm:absolute text-white bg-advanced-filter mx-3 mb-3 sm:inset-x-0 sm:bottom-0 border-b rounded-b-md sm:border-t sm:border-b-0 z-10 dark:bg-transparent"
             [showFirstLastButtons]="true"
             (page)="pageChanged($event)"
             showFirstLastButtons
