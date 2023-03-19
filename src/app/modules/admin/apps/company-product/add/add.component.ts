@@ -12,12 +12,7 @@ import { BreadcrumbService } from 'xng-breadcrumb';
 import { FuseMediaWatcherService } from '@fuse/services/media-watcher';
 import { FuseConfirmationService } from '../../../../../../@fuse/services/confirmation';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  Category,
-  CompanyProduct,
-  Product,
-  TypeProduct,
-} from '../../../../../shared/models/inventory';
+import { CompanyProduct, Product, TypeProduct } from '../../../../../shared/models/inventory';
 import { CompanyProductService } from 'app/shared/services/company-product.service';
 import { InventoryService } from '../../../../../shared/services/inventory.service';
 
@@ -36,7 +31,6 @@ export class AddComponent implements OnInit {
   featureActions = FeatureActions;
   contractPrices: any;
   // new ********************
-  category: Category = new Category();
   typeProducts: TypeProduct[] = [new TypeProduct()];
   selectedTypeProduct: TypeProduct | null = null;
   products: Product[][] = [[new Product()]];

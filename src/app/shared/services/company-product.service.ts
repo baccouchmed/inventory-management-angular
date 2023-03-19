@@ -85,6 +85,30 @@ export class CompanyProductService {
       params: searchParams,
     });
   }
+  getNewProducts(
+    limit,
+    page,
+    search,
+    id,
+    type = null,
+    company = null,
+  ): Observable<Pagination<Product>> {
+    let searchParams = new HttpParams();
+    searchParams = searchParams.append('limit', limit);
+    searchParams = searchParams.append('page', page);
+    if (search) {
+      searchParams = searchParams.append('search', search);
+    }
+    if (type) {
+      searchParams = searchParams.append('type', type);
+    }
+    if (company) {
+      searchParams = searchParams.append('company', company);
+    }
+    return this.http.get<Pagination<Product>>(`${this.endpoint}/new-products`, {
+      params: searchParams,
+    });
+  }
   getProductStocks(
     limit,
     page,
@@ -141,6 +165,7 @@ export class CompanyProductService {
   createTypeProduct(stages: TypeProduct[]): Observable<null> {
     return this.http.post<null>(`${this.endpoint}/type-product`, { stages });
   }
+
   getTypeProducts(limit, page, sortLabel, search): Observable<Pagination<TypeProduct>> {
     let searchParams = new HttpParams();
     searchParams = searchParams.append('limit', limit);
@@ -169,5 +194,9 @@ export class CompanyProductService {
   }
   getCompanyTypeProduct(id: string): Observable<any> {
     return this.http.get<any>(`${this.endpoint}/${id}/Type-products`);
+  }
+
+  validateNewProduct(id, data): Observable<null> {
+    return this.http.post<null>(`${this.endpoint}/${id}/validate`, { data });
   }
 }

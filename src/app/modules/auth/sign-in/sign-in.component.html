@@ -15,7 +15,12 @@
       <div class="mt-8 text-4xl font-extrabold tracking-tight leading-tight">
         {{ 'Sign in' | transloco }}
       </div>
-      <div class="flex items-baseline mt-0.5 font-medium"></div>
+      <div class="flex items-baseline mt-0.5 font-medium">
+        <div>{{ "Don't have an account?" | transloco }}</div>
+        <a class="ml-1 text-primary-500 hover:underline" [routerLink]="['/sign-up']"
+          >{{ 'Sign up' | transloco }}
+        </a>
+      </div>
       <!-- Sign in form -->
       <form class="mt-8" [formGroup]="signInForm" #signInNgForm="ngForm">
         <!-- Email field -->

@@ -9,7 +9,7 @@ import { TypeThirdParty } from '../../../../../shared/models/third-party-type';
 import { Pagination } from '../../../../../shared/models/pagination';
 import { FeatureCodes } from '../../../../../shared/enums/feature-codes';
 import { FeatureActions } from '../../../../../shared/enums/feature-actions';
-import { Category, CompanyProduct } from '../../../../../shared/models/inventory';
+import { CompanyProduct } from '../../../../../shared/models/inventory';
 import { CompanyProductService } from '../../../../../shared/services/company-product.service';
 
 @Component({
@@ -21,7 +21,6 @@ export class ListComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   filterOptions: FilterOptions = new FilterOptions();
-  category: Category;
   currentSize = 10;
   currentPage = 1;
   displayedList: Pagination<CompanyProduct>;
@@ -138,7 +137,7 @@ export class ListComponent implements OnInit {
   addTypeThirdParty(): void {
     this._router.navigate(['add'], { relativeTo: this.route });
   }
-  deleteThirdParty(category) {
+  deleteThirdParty(company) {
     // Open the confirmation dialog
     const confirmation = this._fuseConfirmationService.open({
       title: 'Delete',

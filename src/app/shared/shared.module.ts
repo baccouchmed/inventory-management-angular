@@ -13,6 +13,7 @@ import { StatusFormatPipe } from './pipes/statusFormat/status-format.pipe';
 import { SnackBarComponent } from './components/snack-bar/snack-bar.component';
 import { FileFormatPipe } from './pipes/fileFormat/file-format.pipe';
 import { FeaturesDirective } from './directives/features/features.directive';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   imports: [
@@ -26,6 +27,7 @@ import { FeaturesDirective } from './directives/features/features.directive';
     MatSnackBarModule,
     MatIconModule,
     MatButtonModule,
+    MatTooltipModule,
   ],
   declarations: [
     RefListPipe,

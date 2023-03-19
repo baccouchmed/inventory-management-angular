@@ -1,0 +1,15 @@
+<div class="w-full h-screen relative">
+  <div
+    class="absolute top-0 h-40 xs:h-20 w-full bg-accent dark:bg-white rounded-b-3xl px-4 text-white dark:text-accent"
+  >
+    <app-header></app-header>
+  </div>
+  <div class="w-full overflow-y-auto mt-40 xs:mt-20 mb-20 h-body-xs">
+    <router-outlet></router-outlet>
+  </div>
+  <div
+    class="absolute bottom-0 h-20 w-full bg-accent dark:bg-white rounded-t-3xl text-white dark:text-accent p-4"
+  >
+    <app-footer></app-footer>
+  </div>
+</div>

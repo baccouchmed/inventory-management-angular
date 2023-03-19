@@ -18,6 +18,7 @@ import { ClassyLayoutComponent } from 'app/layout/layouts/vertical/classy/classy
 import { BreadcrumbModule } from 'xng-breadcrumb';
 import { TranslocoModule } from '@ngneat/transloco';
 import { LanguagesModule } from '../../../common/languages/languages.module';
+import { SettingsModule } from '../../../common/settings/settings.module';
 
 @NgModule({
   declarations: [ClassyLayoutComponent],
@@ -41,6 +42,7 @@ import { LanguagesModule } from '../../../common/languages/languages.module';
     BreadcrumbModule,
     LanguagesModule,
     TranslocoModule,
+    SettingsModule,
   ],
   exports: [ClassyLayoutComponent],
 })

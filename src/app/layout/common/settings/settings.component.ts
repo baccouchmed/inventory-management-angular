@@ -1,22 +1,27 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { FuseConfigService } from '@fuse/services/config';
-import { FuseTailwindService } from '@fuse/services/tailwind';
 import { AppConfig, Scheme, Theme } from 'app/core/config/app.config';
 import { Layout } from 'app/layout/layout.types';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styles: [
     `
-      settings {
+      app-settings {
         position: static;
         display: block;
         flex: none;
         width: auto;
+      }
+
+      @media (screen and min-width: 1280px) {
+        app-empty-layout + app-settings .settings-cog {
+          right: 0 !important;
+        }
       }
     `,
   ],
@@ -27,17 +32,12 @@ export class SettingsComponent implements OnInit, OnDestroy {
   layout: Layout;
   scheme: 'dark' | 'light';
   theme: string;
-  themes: [string, any][] = [];
   private _unsubscribeAll: Subject<any> = new Subject<any>();
 
   /**
    * Constructor
    */
-  constructor(
-    private _router: Router,
-    private _fuseConfigService: FuseConfigService,
-    private _fuseTailwindService: FuseTailwindService,
-  ) {}
+  constructor(private _router: Router, private _fuseConfigService: FuseConfigService) {}
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
@@ -47,13 +47,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
    * On init
    */
   ngOnInit(): void {
-    // Get the themes
-    this._fuseTailwindService.tailwindConfig$
-      .pipe(takeUntil(this._unsubscribeAll))
-      .subscribe((config) => {
-        this.themes = Object.entries(config.themes);
-      });
-
     // Subscribe to config changes
     this._fuseConfigService.config$
       .pipe(takeUntil(this._unsubscribeAll))
@@ -68,7 +61,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy(): void {
     // Unsubscribe from all subscriptions
-    this._unsubscribeAll.next();
+    this._unsubscribeAll.next(null);
     this._unsubscribeAll.complete();
   }
 

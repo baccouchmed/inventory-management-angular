@@ -1,33 +1,41 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-import { fuseAnimations } from '@fuse/animations';
-import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/shared/services/auth.service';
+import { CountryService } from '../../../shared/services/country.service';
+import { Country, Governorate, Municipality } from '../../../shared/models/country';
+import { Company } from '../../../shared/models/company';
+import { listTypeCompany, TypeCompany } from '../../../shared/enums/types-company';
 
 @Component({
   selector: 'app-auth-sign-up',
   templateUrl: './sign-up.component.html',
   encapsulation: ViewEncapsulation.None,
-  animations: fuseAnimations,
 })
 export class AuthSignUpComponent implements OnInit {
-  @ViewChild('signUpNgForm') signUpNgForm: NgForm;
+  company: Company = {
+    name: 'test',
+    address: 'Rades',
+    email: 'test@test.com',
+    label: 'test',
+    phone: '29905061',
+    postalCode: '2098',
+    type: 'supplier' as TypeCompany,
+  } as Company;
+  readonly listTypeCompany = listTypeCompany;
 
-  alert: { type: FuseAlertType; message: string } = {
-    type: 'success',
-    message: '',
-  };
-  signUpForm: FormGroup;
-  showAlert = false;
-
+  listCountries: Country[];
+  filteredListCountries = [];
+  listGovernorates: Governorate[];
+  filteredListGovernorates = [];
+  listMunicipalities: Municipality[];
+  filteredListMunicipalities = [];
   /**
    * Constructor
    */
   constructor(
     private _authService: AuthService,
-    private _formBuilder: FormBuilder,
     private _router: Router,
+    private countryService: CountryService,
   ) {}
 
   // -----------------------------------------------------------------------------------------------------
@@ -38,15 +46,7 @@ export class AuthSignUpComponent implements OnInit {
    * On init
    */
   ngOnInit(): void {
-    // Create the form
-    this.signUpForm = this._formBuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      youAre: ['', Validators.required],
-      agreements: ['', Validators.requiredTrue],
-    });
+    this.getCountries();
   }
 
   // -----------------------------------------------------------------------------------------------------
@@ -56,40 +56,68 @@ export class AuthSignUpComponent implements OnInit {
   /**
    * Sign up
    */
-  signUp(): void {
+  signUp(form): void {
     // Do nothing if the form is invalid
-    if (this.signUpForm.invalid) {
+    if (form.invalid) {
       return;
     }
 
-    // Disable the form
-    this.signUpForm.disable();
-
-    // Hide the alert
-    this.showAlert = false;
-
     // Sign up
-    this._authService.signUp(this.signUpForm.value).subscribe(
+    this._authService.signUp(this.company).subscribe(
       (response) => {
         // Navigate to the confirmation required page
         this._router.navigateByUrl(`/confirmation-required?id=${response.id}`);
       },
-      () => {
-        // Re-enable the form
-        this.signUpForm.enable();
-
-        // Reset the form
-        this.signUpNgForm.resetForm();
-
-        // Set the alert
-        this.alert = {
-          type: 'error',
-          message: 'Something went wrong, please try again.',
-        };
-
-        // Show the alert
-        this.showAlert = true;
-      },
+      () => {},
     );
+  }
+  getCountries() {
+    this.countryService.getAllCountries().subscribe(
+      (countries) => {
+        this.listCountries = countries;
+        this.filteredListCountries = this.listCountries;
+      },
+      () => {},
+    );
+  }
+
+  refreshListCountry(value: any) {
+    if (this.company.countryId !== null) {
+      this.company.countryId = value;
+      this.company.governorateId = null;
+      this.countryService.getGovernorates(value._id).subscribe(
+        (governorates) => {
+          this.listGovernorates = governorates;
+          this.filteredListGovernorates = this.listGovernorates;
+        },
+        () => {},
+      );
+    } else {
+      this.company.governorateId = null;
+      this.filteredListGovernorates = [];
+    }
+  }
+
+  refreshListGovernorate(value: any) {
+    if (this.company.governorateId !== null) {
+      this.company.governorateId = value;
+      this.company.municipalityId = null;
+      this.countryService.getMunicipalities(value._id).subscribe(
+        (municipalities) => {
+          this.listMunicipalities = municipalities;
+          this.filteredListMunicipalities = this.listMunicipalities;
+        },
+        () => {},
+      );
+    } else {
+      this.company.municipalityId = null;
+      this.filteredListMunicipalities = [];
+    }
+  }
+
+  refreshListMunicipality(value: any) {
+    if (this.company.municipalityId) {
+      this.company.municipalityId = value;
+    }
   }
 }

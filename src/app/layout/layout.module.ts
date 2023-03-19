@@ -26,6 +26,7 @@ const layoutModules = [
     SharedModule,
     SettingsModule,
     ...layoutModules,
+    SettingsModule,
   ],
   exports: [LayoutComponent, ...layoutModules],
 })

@@ -42,5 +42,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     TranslocoRootModule,
     MatProgressBarModule,
   ],
+  exports: [SettingsComponent],
 })
 export class SettingsModule {}

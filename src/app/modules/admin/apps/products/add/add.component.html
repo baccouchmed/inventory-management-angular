@@ -1,0 +1,200 @@
+<div class="flex flex-col flex-1 bg-card dark:bg-transparent">
+  <form class="w-full" #myForm="ngForm" ngForm="ngForm">
+    <!-- Header -->
+    <div class="relative flex flex-col flex-0 sm:justify-between py-3 px-3 border-b">
+      <!-- Loader -->
+      <div class="absolute inset-x-0 bottom-0" *ngIf="isLoading">
+        <mat-progress-bar [mode]="'indeterminate'"></mat-progress-bar>
+      </div>
+      <!-- Title -->
+      <div class="hidden md:flex text-3xl font-extrabold tracking-tight">
+        {{ 'Add product' | transloco }}
+      </div>
+      <!-- Actions -->
+      <div class="flex flex-shrink-0 w-full items-center md:mt-3 sm:mt-0">
+        <div class="w-3/4 sm:w-2/3 flex flex-row">
+          <!-- clear project button -->
+          <button
+            class="mr-2 text-red-500"
+            mat-flat-button
+            type="button"
+            (click)="resetForm(myForm, $event)"
+          >
+            <span class="ml-2 mr-1">{{ 'Clear' | transloco }}</span>
+          </button>
+        </div>
+        <div class="flex justify-end w-1/4 sm:w-1/3 ml-1 sm:ml-0">
+          <!-- cancel project button -->
+          <button class="mr-2" mat-flat-button (click)="cancelForm(myForm)">
+            <span class="ml-2 mr-1">{{ 'Cancel' | transloco }}</span>
+          </button>
+          <!-- save project button -->
+          <button
+            class="mr-2"
+            mat-flat-button
+            [color]="'primary'"
+            type="submit"
+            (click)="createProduct(myForm)"
+            [disabled]="isLoading"
+          >
+            <span class="ml-2 mr-1">{{ 'Save' | transloco }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="flex flex-1 flex-col flex-auto overflow-hidden sm:overflow-y-auto">
+      <div class="flex flex-col mb-6 w-full">
+        <div class="grid sm:grid-cols-4 gap-6 p-3">
+          <!-- label -->
+          <div class="sm:col-span-4">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'label' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="product.label"
+                matInput
+                name="label"
+                type="text"
+                [disabled]="isLoading"
+                required
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['label'] &&
+                (myForm.controls['label'].dirty || myForm.submitted) &&
+                myForm.controls['label'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- Company product -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'company product' | transloco }}</mat-label>
+              <mat-select
+                name="companyProductId"
+                placeholder="select icon"
+                [(ngModel)]="product.companyProductId"
+              >
+                <mat-select-trigger>
+                  <div
+                    class="font-medium items-center flex flex-row"
+                    *ngIf="product.companyProductId"
+                  >
+                    <span class="hidden sm:block"> {{ product.companyProductId.name }} </span>
+                  </div>
+                </mat-select-trigger>
+
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [showSpinner]="true"
+                  [displayMember]="'name'"
+                  [array]="listCompanyProduct"
+                  (filteredReturn)="filteredListCompanyProduct = $event"
+                ></mat-select-filter>
+                <mat-option [value]="null">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- Other --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option *ngFor="let item of filteredListCompanyProduct" [value]="item">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ item.name }} </span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- label -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'new company product' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="product.companyProductIdNew"
+                matInput
+                name="newCompanyProduct"
+                type="text"
+                [disabled]="isLoading || product.companyProductId !== null"
+                [required]="!product.companyProductId"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['newCompanyProduct'] &&
+                (myForm.controls['newCompanyProduct'].dirty || myForm.submitted) &&
+                myForm.controls['newCompanyProduct'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-6 gap-6 p-3">
+          <!-- Type product -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'type product' | transloco }}</mat-label>
+              <mat-select
+                name="typeProductId"
+                placeholder="select icon"
+                [(ngModel)]="product.typeProductId"
+              >
+                <mat-select-trigger>
+                  <div class="font-medium items-center flex flex-row" *ngIf="product.typeProductId">
+                    <span class="hidden sm:block"> {{ product.typeProductId.label }} </span>
+                  </div>
+                </mat-select-trigger>
+
+                <mat-select-filter
+                  [placeholder]="'Filter'"
+                  [showSpinner]="true"
+                  [displayMember]="'label'"
+                  [array]="listTypeProduct"
+                  (filteredReturn)="filteredListTypeProduct = $event"
+                ></mat-select-filter>
+                <mat-option [value]="null">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ '-- Other --' | transloco }} </span>
+                  </div>
+                </mat-option>
+                <mat-option *ngFor="let item of filteredListTypeProduct" [value]="item">
+                  <div class="font-medium items-center flex flex-row">
+                    <span class="hidden sm:block"> {{ item.label }} </span>
+                  </div>
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <!-- label -->
+          <div class="sm:col-span-3">
+            <mat-form-field class="fuse-mat-no-subscript fuse-mat-emphasized-affix w-full">
+              <mat-label class="capitalize">{{ 'new type product' | transloco }}</mat-label>
+              <input
+                [(ngModel)]="product.typeProductIdNew"
+                matInput
+                name="newTypeProduct"
+                type="text"
+                [disabled]="isLoading || product.typeProductId !== null"
+                [required]="!product.typeProductId"
+              />
+            </mat-form-field>
+            <mat-error
+              *ngIf="
+                myForm.controls['newTypeProduct'] &&
+                (myForm.controls['newTypeProduct'].dirty || myForm.submitted) &&
+                myForm.controls['newTypeProduct'].hasError('required')
+              "
+            >
+              {{ 'This field is required' | transloco }}
+            </mat-error>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

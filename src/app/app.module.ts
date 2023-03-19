@@ -22,7 +22,6 @@ import { TranslocoService } from '@ngneat/transloco';
 import { SharedModule } from './shared/shared.module';
 import { TranslocoRootModule } from './transloco/transloco-root.module';
 import { ApiErrorsInterceptor } from './shared/interceptors/api-errors.interceptor';
-import { CompaniesComponent } from './modules/admin/apps/companies/companies.component';
 import * as Sentry from '@sentry/angular';
 
 const routerConfig: ExtraOptions = {
@@ -35,7 +34,7 @@ export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: ApiErrorsInterceptor, multi: true },
 ];
 @NgModule({
-  declarations: [AppComponent, CompaniesComponent],
+  declarations: [AppComponent],
   imports: [
     CommonModule,
     BrowserModule,

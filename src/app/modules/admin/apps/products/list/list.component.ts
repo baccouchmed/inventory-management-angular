@@ -168,4 +168,8 @@ export class ListComponent implements OnInit {
   openFilter() {
     this.openFilters = !this.openFilters;
   }
+
+  addProduct() {
+    this._router.navigate([`add`], { relativeTo: this.route });
+  }
 }

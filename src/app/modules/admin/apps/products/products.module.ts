@@ -31,9 +31,10 @@ import { ListComponent } from './list/list.component';
 import { TranslocoRootModule } from '../../../../transloco/transloco-root.module';
 import { MatSelectFilterModule } from 'mat-select-filter';
 import { productsRoutes } from './products.routing';
+import { AddComponent } from './add/add.component';
 
 @NgModule({
-  declarations: [ProductsComponent, ListComponent],
+  declarations: [ProductsComponent, ListComponent, AddComponent],
   imports: [
     RouterModule.forChild(productsRoutes),
     MatButtonModule,

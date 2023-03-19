@@ -4,6 +4,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from './user.service';
+import { Company } from '../models/company';
 import { environment } from '../../../environments/environment';
 import { BadgeService } from './badge.service';
 
@@ -142,7 +143,14 @@ export class AuthService {
     // Return the observable
     return of(true);
   }
-
+  /**
+   * Sign up
+   *
+   * @param company
+   */
+  signUp(company: Company): Observable<any> {
+    return this._httpClient.post(`${this.endpoint}/sign-up`, { company });
+  }
   /**
    * Unlock session
    *

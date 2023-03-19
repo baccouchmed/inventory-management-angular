@@ -4,15 +4,8 @@ import { SnackBarService } from '../../../../../../../shared/services/snack-bar.
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { FuseConfirmationService } from '../../../../../../../../@fuse/services/confirmation';
 import { NgForm } from '@angular/forms';
-import {
-  Category,
-  CompanyProduct,
-  Product,
-  Subcategory,
-  TypeProduct,
-} from '../../../../../../../shared/models/inventory';
+import { CompanyProduct, Product, TypeProduct } from '../../../../../../../shared/models/inventory';
 import { ThirdParty } from '../../../../../../../shared/models/third-party';
-import { listSubcategoryFood } from '../../../../../../../shared/enums/subcategoryFood';
 import { FeatureCodes } from '../../../../../../../shared/enums/feature-codes';
 import { FeatureActions } from '../../../../../../../shared/enums/feature-actions';
 import { InventoryService } from '../../../../../../../shared/services/inventory.service';
@@ -43,9 +36,6 @@ export class EditComponent implements OnInit {
   contractLines: any;
   contractPrices: any;
   // new ********************
-  category: Category;
-  subcategories: Subcategory[] = [new Subcategory()];
-  selectedSubcategory: Subcategory | null = null;
   products: Product[][] = [[new Product()]];
   urlLogo = `${environment.api}/public/logo/`;
 
@@ -59,7 +49,6 @@ export class EditComponent implements OnInit {
   filteredListCompanyProduct = [];
   listTypeProduct: TypeProduct[];
   filteredListTypeProduct = [];
-  readonly listSubcategoryFood = listSubcategoryFood;
   id: string;
   typeProducts: any;
   selectedTypeProduct: Boolean;
@@ -220,6 +209,7 @@ export class EditComponent implements OnInit {
       reader.onload = () => (this.imageSrc = reader.result);
       reader.readAsDataURL(file);
       this.logoExist = true;
+      this.sendLogo(this.company._id);
     }
   }
   sendLogo(id): void {

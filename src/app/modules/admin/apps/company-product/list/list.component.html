@@ -67,7 +67,7 @@
               <!-- Rows -->
               <ng-container>
                 <ng-container *ngFor="let company of displayedList?.data">
-                  <div class="" (click)="isScreenSmall ? openShow(category) : null">
+                  <div class="" (click)="isScreenSmall ? openShow(company) : null">
                     <div class="stage-grid grid items-center gap-4 py-4 px-4 md:px-6 border-b">
                       <div class="truncate flex justify-center">{{ company.name }}</div>
 

@@ -1,13 +1,5 @@
 import { Company } from './company';
-import * as buffer from 'buffer';
 
-export class Category {
-  id?: string;
-  // tslint:disable-next-line:variable-name
-  _id?: string;
-  label?: string;
-  logo?: string;
-}
 export class CompanyProduct {
   id?: string;
   // tslint:disable-next-line:variable-name
@@ -21,14 +13,6 @@ export class TypeProduct {
   _id?: string;
   label?: string;
 }
-export class Subcategory {
-  id?: string;
-  // tslint:disable-next-line:variable-name
-  _id?: string;
-  categoryId?: Category;
-  label?: string;
-  logo?: string;
-}
 
 export class CompanyProductTypeProduct {
   id?: string;
@@ -41,17 +25,25 @@ export class Product {
   id?: string;
   // tslint:disable-next-line:variable-name
   _id?: string;
+  companyId?: Company;
   companyProductId?: CompanyProduct;
   typeProductId?: TypeProduct;
   companyProductTypeProductId?: CompanyProductTypeProduct;
+  companyProductIdNew?: string;
+  typeProductIdNew?: string;
+  companyProductTypeProductIdNew?: string;
   label?: string;
+  lot?: string;
+  DF?: string;
+  DLC?: string;
   quantity?: number;
   unitPrice?: number;
   logo?: string;
   myStock?: string;
   minStock?: string;
   requestedStock?: number;
-  status?: boolean;
+  status?: string;
+  creator?: Company;
 }
 export class ProductStock {
   id?: string;

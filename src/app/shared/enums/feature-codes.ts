@@ -14,6 +14,8 @@ export enum FeatureCodes {
   groups = 'groups',
   users = 'users',
   paramProject = 'param-project',
+
+  newProducts = 'new-products',
   account = 'account',
   profile = 'profile',
   thirdPartyType = 'third-party-type',
@@ -60,6 +62,7 @@ export const listFeatureActions: RefList<FeatureCodes>[] = [
   { key: FeatureCodes.supplier, value: 'Supplier' },
   { key: FeatureCodes.inventory, value: 'Inventory' },
   { key: FeatureCodes.userFeatures, value: 'user-features' },
+  { key: FeatureCodes.newProducts, value: 'new-products' },
   { key: FeatureCodes.supplierClient, value: 'supplier-client' },
   { key: FeatureCodes.companyProduct, value: 'company-product' },
   { key: FeatureCodes.typeProduct, value: 'type-product' },

@@ -11,7 +11,7 @@ export const appRoutes: Route[] = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'home/profile',
+    redirectTo: 'home',
   },
 
   // Redirect signed in user to the '/example'
@@ -55,11 +55,20 @@ export const appRoutes: Route[] = [
           import('app/modules/auth/sign-in/sign-in.module').then((m) => m.AuthSignInModule),
       },
       {
+        path: 'sign-up',
+        loadChildren: () =>
+          import('app/modules/auth/sign-up/sign-up.module').then((m) => m.AuthSignUpModule),
+      },
+      {
         path: 'confirmation-required',
         loadChildren: () =>
           import('app/modules/auth/confirmation-required/confirmation-required.module').then(
             (m) => m.AuthConfirmationRequiredModule,
           ),
+      },
+      {
+        path: 'home',
+        loadChildren: () => import('app/modules/home/home.module').then((m) => m.HomeModule),
       },
     ],
   },
@@ -229,6 +238,19 @@ export const appRoutes: Route[] = [
             loadChildren: () =>
               import('app/modules/admin/apps/products/products.module').then(
                 (m) => m.ProductsModule,
+              ),
+          },
+          {
+            canActivate: [IsAuthorizedGuard],
+            canActivateChild: [IsAuthorizedGuard],
+            path: 'new-products',
+            data: {
+              breadcrumb: 'New products',
+              feature: FeatureCodes.newProducts,
+            },
+            loadChildren: () =>
+              import('app/modules/admin/apps/new-products/new-products.module').then(
+                (m) => m.NewProductsModule,
               ),
           },
           {
