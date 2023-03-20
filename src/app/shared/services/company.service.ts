@@ -5,7 +5,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Pagination } from '../models/pagination';
 import { Company } from '../models/company';
-import { City } from '../models/city';
 import { Country, Governorate } from '../models/country';
 import { Site } from '../models/site';
 import { Currency } from '../models/currency';
@@ -31,7 +30,17 @@ export class CompanyService {
   }
 
   // get companies
-  getCompanies(limit, page, sortCode, sortName, search): Observable<Pagination<Company>> {
+  getCompanies(
+    limit,
+    page,
+    sortCode,
+    sortName,
+    search,
+    country,
+    governorate,
+    municipality,
+    status,
+  ): Observable<Pagination<Company>> {
     let searchParams = new HttpParams();
     searchParams = searchParams.append('limit', limit);
     searchParams = searchParams.append('page', page);
@@ -43,6 +52,18 @@ export class CompanyService {
     }
     if (sortName) {
       searchParams = searchParams.append('sortName', sortName);
+    }
+    if (country) {
+      searchParams = searchParams.append('country', country);
+    }
+    if (governorate) {
+      searchParams = searchParams.append('governorate', governorate);
+    }
+    if (municipality) {
+      searchParams = searchParams.append('municipality', municipality);
+    }
+    if (status) {
+      searchParams = searchParams.append('status', status);
     }
     return this.http.get<Pagination<Company>>(`${this.endpoint}`, {
       params: searchParams,
@@ -162,7 +183,12 @@ export class CompanyService {
   deleteCompany(id): Observable<null> {
     return this.http.delete<null>(`${this.endpoint}/${id}`);
   }
-
+  validateCompany(id): Observable<null> {
+    return this.http.get<null>(`${this.endpoint}/${id}/validate`);
+  }
+  rejectCompany(id): Observable<null> {
+    return this.http.get<null>(`${this.endpoint}/${id}/reject`);
+  }
   updateCompany(company: Company): Observable<null> {
     return this.http.patch<null>(`${this.endpoint}`, { company });
   }

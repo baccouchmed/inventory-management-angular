@@ -10,6 +10,11 @@ import { FilterOptions } from '../../../../../shared/models/filter-options';
 import { Company } from '../../../../../shared/models/company';
 import { Pagination } from '../../../../../shared/models/pagination';
 import { environment } from '../../../../../../environments/environment';
+import { Country, Governorate, Municipality } from '../../../../../shared/models/country';
+import { StatusCompany, listStatusCompany } from '../../../../../shared/enums/status-company';
+import { forkJoin } from 'rxjs';
+import { CompanyProduct, TypeProduct } from '../../../../../shared/models/inventory';
+import { CountryService } from '../../../../../shared/services/country.service';
 
 @Component({
   selector: 'app-list',
@@ -30,7 +35,7 @@ export class ListComponent implements OnInit {
   connectedUser: User;
   url = `${environment.api}/public/`;
   urlFlag = `${environment.services.i18n.url}/assets/`;
-
+  readonly StatusCompany = StatusCompany;
   isScreenSmall: boolean;
   path: string;
   searchFilter: string;
@@ -38,14 +43,27 @@ export class ListComponent implements OnInit {
   count: number;
   sortCode: string;
   sortName: string;
+  advancedFilter: boolean = false;
 
+  country: Country;
+  governorate: Governorate;
+  municipality: Municipality;
+  listCountries: Country[];
+  filteredListCountries = [];
+  listGovernorates: Governorate[];
+  filteredListGovernorates = [];
+  listMunicipalities: Municipality[];
+  filteredListMunicipalities = [];
+  statusCompany: StatusCompany;
+  readonly listStatusCompany = listStatusCompany;
   constructor(
     private userService: UserService,
-    private companyService: CompanyService,
     private _router: Router,
     private route: ActivatedRoute,
     private _fuseMediaWatcherService: FuseMediaWatcherService,
     private _fuseConfirmationService: FuseConfirmationService,
+    private companyService: CompanyService,
+    private countryService: CountryService,
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +80,18 @@ export class ListComponent implements OnInit {
       },
       () => {},
     );
-    this.getList();
+    const obs = [this.countryService.getAllCountries()];
+    this.isLoading = true;
+    forkJoin(obs).subscribe(
+      (result: [TypeProduct[], CompanyProduct[]]) => {
+        this.listCountries = result[0];
+        this.filteredListCountries = this.listCountries;
+        this.getList();
+      },
+      () => {
+        this.isLoading = false;
+      },
+    );
   }
   pageChanged(event): void {
     let { pageIndex } = event;
@@ -85,6 +114,10 @@ export class ListComponent implements OnInit {
         this.filterOptions.sortCode,
         this.filterOptions.sortName,
         this.filterOptions.search,
+        this.country ? this.country._id : null,
+        this.governorate ? this.governorate._id : null,
+        this.municipality ? this.municipality._id : null,
+        this.statusCompany || null,
       )
       .subscribe(
         (res: Pagination<Company>) => {
@@ -166,6 +199,84 @@ export class ListComponent implements OnInit {
       // If the confirm button pressed...
       if (result === 'confirmed') {
         this.companyService.deleteCompany(company._id).subscribe(() => {
+          this.getList();
+        });
+      }
+    });
+  }
+
+  refreshGovernorates() {
+    this.governorate = null;
+    this.municipality = null;
+    this.listMunicipalities = [];
+    this.filteredListMunicipalities = [];
+    this.countryService.getGovernorates(this.country._id).subscribe((governorates) => {
+      this.listGovernorates = governorates;
+      this.filteredListGovernorates = this.listGovernorates;
+    });
+  }
+  refreshMunicipalities() {
+    this.municipality = null;
+    this.countryService.getMunicipalities(this.governorate._id).subscribe((municipalities) => {
+      this.listMunicipalities = municipalities;
+      this.filteredListMunicipalities = this.listMunicipalities;
+    });
+  }
+
+  validateCompany(company: Company) {
+    const confirmation = this._fuseConfirmationService.open({
+      title: 'Validation',
+      message: 'Would you like to confirm the validation ?',
+      icon: {
+        show: true,
+        name: 'heroicons_outline:shield-check',
+        color: 'success',
+      },
+      actions: {
+        confirm: {
+          label: 'yes',
+        },
+        cancel: {
+          label: 'no',
+        },
+      },
+    });
+
+    // Subscribe to the confirmation dialog closed action
+    confirmation.afterClosed().subscribe((result) => {
+      // If the confirm button pressed...
+      if (result === 'confirmed') {
+        this.companyService.validateCompany(company._id).subscribe(() => {
+          this.getList();
+        });
+      }
+    });
+  }
+
+  rejectCompany(company: Company) {
+    const confirmation = this._fuseConfirmationService.open({
+      title: 'Reject',
+      message: 'Would you like to reject request ?',
+      icon: {
+        show: true,
+        name: 'heroicons_outline:x-circle',
+        color: 'warn',
+      },
+      actions: {
+        confirm: {
+          label: 'yes',
+        },
+        cancel: {
+          label: 'no',
+        },
+      },
+    });
+
+    // Subscribe to the confirmation dialog closed action
+    confirmation.afterClosed().subscribe((result) => {
+      // If the confirm button pressed...
+      if (result === 'confirmed') {
+        this.companyService.rejectCompany(company._id).subscribe(() => {
           this.getList();
         });
       }

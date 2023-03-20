@@ -15,6 +15,7 @@ export class Company {
   email?: string;
   logo?: string;
   createdAt?: string;
+  status?: string;
   type?: TypeCompany;
   governorateId?: Governorate;
   municipalityId?: Municipality;

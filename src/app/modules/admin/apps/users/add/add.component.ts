@@ -13,10 +13,6 @@ import { FuseConfirmationService } from '../../../../../../@fuse/services/confir
 import { BreadcrumbService } from 'xng-breadcrumb';
 import { Group } from '../../../../../shared/models/group';
 import { GroupService } from '../../../../../shared/services/group.service';
-import { ThirdPartyService } from '../../../../../shared/services/thirdparty.service';
-import { ThirdParty } from '../../../../../shared/models/third-party';
-import { TypeThirdParty } from '../../../../../shared/models/third-party-type';
-import { TypeThirdPartyService } from '../../../../../shared/services/typethirdparty.service';
 import { Company } from '../../../../../shared/models/company';
 
 @Component({
@@ -36,10 +32,6 @@ export class AddComponent implements OnInit {
   confirmPassword: string = null;
   filteredListGroups: any;
   connectedUser: User;
-  listThirdParty: ThirdParty[];
-  filteredListThirdParty = [];
-  listTypeThirdParty: TypeThirdParty[];
-  filteredListTypeThirdParty = [];
   listGroups: Group[];
   avatar: File = null;
   image: string;
@@ -51,8 +43,6 @@ export class AddComponent implements OnInit {
   constructor(
     public userService: UserService,
     public groupService: GroupService,
-    public thirdPartyService: ThirdPartyService,
-    public typeThirdPartyService: TypeThirdPartyService,
     private translocoHttpLoader: TranslocoHttpLoader,
     private companyService: CompanyService,
     private _router: Router,
@@ -65,10 +55,6 @@ export class AddComponent implements OnInit {
   ngOnInit(): void {
     this.breadcrumbService.set('home/users/add', 'Add');
     this.user.defaultSite = null;
-    this.typeThirdPartyService.getAllTypeThirdParty().subscribe((d) => {
-      this.listTypeThirdParty = d;
-      this.filteredListTypeThirdParty = this.listTypeThirdParty;
-    });
     this.groupService.getAllGroups().subscribe((d) => {
       this.listGroups = d;
       this.filteredListGroups = this.listGroups;
@@ -88,27 +74,27 @@ export class AddComponent implements OnInit {
       this.confirmPassword = null;
     }
     if (myForm.valid) {
-        if (this.user.password !== this.confirmPassword) {
-          this.snackBarService.openSnackBar('Confirm password not match', 'error');
-        } else {
-          const data: FormData = new FormData();
-          if (this.avatar) {
-            data.append(`avatar`, this.avatar, this.avatar.name);
-          }
-          this.isLoading = true;
-          this.userService.addUser(this.user).subscribe(
-            (user) => {
-              if (this.avatar) {
-                this.sendAvatar(user._id);
-                this.isLoading = false;
-              }
-              this._router.navigate([`../${user._id}`], { relativeTo: this.route });
-            },
-            () => {
-              this.isLoading = false;
-            },
-          );
+      if (this.user.password !== this.confirmPassword) {
+        this.snackBarService.openSnackBar('Confirm password not match', 'error');
+      } else {
+        const data: FormData = new FormData();
+        if (this.avatar) {
+          data.append(`avatar`, this.avatar, this.avatar.name);
         }
+        this.isLoading = true;
+        this.userService.addUser(this.user).subscribe(
+          (user) => {
+            if (this.avatar) {
+              this.sendAvatar(user._id);
+              this.isLoading = false;
+            }
+            this._router.navigate([`../${user._id}`], { relativeTo: this.route });
+          },
+          () => {
+            this.isLoading = false;
+          },
+        );
+      }
     }
   }
 
@@ -196,17 +182,5 @@ export class AddComponent implements OnInit {
       },
       () => {},
     );
-  }
-  refreshListThirdParty(value: any) {
-    if (value !== null) {
-      this.user.thirdPartyId = null;
-      this.thirdPartyService.getThirdPartyList(value._id).subscribe((d) => {
-        this.listThirdParty = d;
-        this.filteredListThirdParty = this.listThirdParty;
-      });
-    } else {
-      this.user.thirdPartyId = null;
-      this.filteredListThirdParty = [];
-    }
   }
 }

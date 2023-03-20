@@ -93,8 +93,8 @@ export class AuthService {
     return this._httpClient.post(`${this.endpoint}/refresh-token`, body).pipe(
       switchMap((response: any) => {
         // Store the access token in the local storage
-        this.accessToken = response.token;
-        return of(response.token);
+        this.accessToken = response;
+        return of(response);
       }),
     );
   }
